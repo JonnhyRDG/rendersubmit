@@ -41,7 +41,7 @@ class renderSubmit(base_class, generated_class):
         delegate = AlignDelegate(self.shotlist_table)
         self.shotlist_table.setItemDelegate(delegate)
     
-    # comment
+    # testing git and branches
     # Definimos la funcion que se ejecuta al darle al boton
     def dictread(self):
         self.seqsdictjson = open('P:/AndreJukebox/aj_seq_dict.json')
