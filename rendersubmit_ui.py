@@ -42,6 +42,7 @@ class renderSubmit(base_class, generated_class):
         self.shotlist_table.setItemDelegate(delegate)
     
     # Definimos la funcion que se ejecuta al darle al boton
+    # otro comentario mas que te pario che
         
     def dictread(self):
         self.seqsdictjson = open('P:/AndreJukebox/aj_seq_dict.json')
