@@ -43,6 +43,8 @@ class renderSubmit(base_class, generated_class):
     
     # testing git and branches
     # Definimos la funcion que se ejecuta al darle al boton
+    # Another branch test
+        
     def dictread(self):
         self.seqsdictjson = open('P:/AndreJukebox/aj_seq_dict.json')
         self.seqsdict = json.load(self.seqsdictjson)
