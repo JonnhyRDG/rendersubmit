@@ -380,7 +380,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>10</pointsize>
+      <pointsize>12</pointsize>
      </font>
     </property>
     <property name="lineWidth">
@@ -390,18 +390,14 @@
      <number>0</number>
     </property>
     <property name="columnCount">
-     <number>2</number>
+     <number>0</number>
     </property>
-    <column>
-     <property name="text">
-      <string notr="true">1</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string notr="true">2</string>
-     </property>
-    </column>
+    <attribute name="headerCascadingSectionResizes">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="headerHighlightSections">
+     <bool>true</bool>
+    </attribute>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

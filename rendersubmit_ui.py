@@ -37,12 +37,17 @@ class renderSubmit(base_class, generated_class):
 
         # Setteamos los callcacks a los items
         self.sequence_comboBox.currentIndexChanged.connect(self.createkeyshots)
+        # self.shotTree.setHeaderLabel('Shots')
+        # self.shotTree.setHeaderLabel('env_all')
+
+        # QtWidgets.QTreeWidgetItem.col
 
         delegate = AlignDelegate(self.shotTree)
         self.shotTree.setItemDelegate(delegate)
-    
-    # Definimos la funcion que se ejecuta al darle al boton
-        
+        self.shotTree.setAlternatingRowColors(True)
+
+        self.layers = ['env_all','env_bg','char_all','char_andre','fx_smoke','char_cigar','env_skyscraper']
+
     def dictread(self):
         self.seqsdictjson = open('P:/AndreJukebox/aj_seq_dict.json')
         self.seqsdict = json.load(self.seqsdictjson)
@@ -59,43 +64,47 @@ class renderSubmit(base_class, generated_class):
         self.episode_comboBox.addItems(episodes)
         
     def createkeyshots(self):
-        rownumber = 0
         currentseq = str(self.sequence_comboBox.currentText())
-        # self.shotlist_table.setColumnCount(1)
-        # self.shotlist_table.setHorizontalHeaderLabels(['shot'])
-        
-        shots = []
-        
-        # ml_item.addChild(shot_item)
         if not currentseq == '':
             self.shotTree.clear()
+            self.shotTree.setHeaderHidden(False)
+            headers = ['Shots']
+            for layer in self.layers:
+                headers.append(layer)
+                self.shotTree.setHeaderLabels(headers)
+
+
             for items in self.seqsdict[currentseq]:
                 if self.seqsdict[currentseq][items]['type'] == 'key':
                         ml_item = QtWidgets.QTreeWidgetItem(self.shotTree, [items])
-                        ml_button = QtWidgets.QCheckBox(parent=self.shotTree)
+                        ml_button = QtWidgets.QLabel(parent=self.shotTree)
                         self.shotTree.setItemWidget(ml_item,0,ml_button)
                         ml_item.setExpanded(True)
                         childlist = self.seqsdict[currentseq][items]['childs'].rsplit(",")
                         for childshots in childlist:
+                            layercolumn = 1
                             shot_item = QtWidgets.QTreeWidgetItem(ml_item, [childshots])
-                            shot_button = QtWidgets.QCheckBox(parent=self.shotTree)
+                            shot_button = QtWidgets.QLabel(parent=self.shotTree)
                             self.shotTree.setItemWidget(shot_item,0,shot_button)
+                            for ls in range(len(self.layers)):
+                                check_button = QtWidgets.QCheckBox(parent=self.shotTree)
+                                self.shotTree.setItemWidget(shot_item,layercolumn,check_button)
+                                layercolumn = layercolumn + 1
+
                 if self.seqsdict[currentseq][items]['type'] == 'unique':
-                    ml_item = QtWidgets.QTreeWidgetItem(self.shotTree, [items])
-                    ml_button = QtWidgets.QCheckBox(parent=self.shotTree)
-                    self.shotTree.setItemWidget(ml_item,0,ml_button)
+                    unique_item = QtWidgets.QTreeWidgetItem(self.shotTree, [items])
+                    unique_button = QtWidgets.QLabel(parent=self.shotTree)
+                    self.shotTree.setItemWidget(unique_item,0,unique_button)
+                    uniquecolumn = 1
+                    for ls in range(len(self.layers)):
+                        uniquecheck_button = QtWidgets.QCheckBox(parent=self.shotTree)
+                        self.shotTree.setItemWidget(unique_item,uniquecolumn,uniquecheck_button)
+                        uniquecolumn = uniquecolumn + 1
+                        unique_button.setAlignment(QtCore.Qt.AlignCenter)
 
-
-
-                # if self.seqsdict[currentseq][items]['type'] == 'child':
-                #     parent = self.seqsdict[currentseq][items]['parent']
-                #     shot_item = QtWidgets.QTreeWidgetItem(ml_item, [items])
-                #     shot_button = QtWidgets.QCheckBox(parent=self.shotTree)
-                #     self.shotTree.setItemWidget(shot_item,0,shot_button)
-                
         else:
             self.shotTree.clear()
-        
+            self.shotTree.setHeaderHidden(True)
 
         # if currentseq in self.seqsdict:
         #     self.shotlist_table.horizontalHeader().setVisible(True)
