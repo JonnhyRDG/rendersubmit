@@ -38,11 +38,10 @@ class renderSubmit(base_class, generated_class):
         # Setteamos los callcacks a los items
         self.sequence_comboBox.currentIndexChanged.connect(self.createkeyshots)
 
-        delegate = AlignDelegate(self.shotlist_table)
-        self.shotlist_table.setItemDelegate(delegate)
+        delegate = AlignDelegate(self.shotTree)
+        self.shotTree.setItemDelegate(delegate)
     
     # Definimos la funcion que se ejecuta al darle al boton
-    # otro comentario mas que te pario che
         
     def dictread(self):
         self.seqsdictjson = open('P:/AndreJukebox/aj_seq_dict.json')
@@ -62,21 +61,54 @@ class renderSubmit(base_class, generated_class):
     def createkeyshots(self):
         rownumber = 0
         currentseq = str(self.sequence_comboBox.currentText())
-        self.shotlist_table.setColumnCount(1)
-        self.shotlist_table.setHorizontalHeaderLabels(['shot'])
+        # self.shotlist_table.setColumnCount(1)
+        # self.shotlist_table.setHorizontalHeaderLabels(['shot'])
+        
+        shots = []
+        
+        # ml_item.addChild(shot_item)
+        if not currentseq == '':
+            self.shotTree.clear()
+            for items in self.seqsdict[currentseq]:
+                if self.seqsdict[currentseq][items]['type'] == 'key':
+                        ml_item = QtWidgets.QTreeWidgetItem(self.shotTree, [items])
+                        ml_button = QtWidgets.QCheckBox(parent=self.shotTree)
+                        self.shotTree.setItemWidget(ml_item,0,ml_button)
+                        ml_item.setExpanded(True)
+                        childlist = self.seqsdict[currentseq][items]['childs'].rsplit(",")
+                        for childshots in childlist:
+                            shot_item = QtWidgets.QTreeWidgetItem(ml_item, [childshots])
+                            shot_button = QtWidgets.QCheckBox(parent=self.shotTree)
+                            self.shotTree.setItemWidget(shot_item,0,shot_button)
+                if self.seqsdict[currentseq][items]['type'] == 'unique':
+                    ml_item = QtWidgets.QTreeWidgetItem(self.shotTree, [items])
+                    ml_button = QtWidgets.QCheckBox(parent=self.shotTree)
+                    self.shotTree.setItemWidget(ml_item,0,ml_button)
 
-        if currentseq in self.seqsdict:
-            self.shotlist_table.horizontalHeader().setVisible(True)
-            if not currentseq == '':
-                for shots in self.seqsdict[currentseq]:
-                    self.shotlist_table.setRowCount(rownumber)
-                    self.shotlist_table.insertRow(rownumber)
-                    self.shotlist_table.setItem(rownumber,0,QtWidgets.QTableWidgetItem(shots))
-                    rownumber = rownumber + 1
+
+
+                # if self.seqsdict[currentseq][items]['type'] == 'child':
+                #     parent = self.seqsdict[currentseq][items]['parent']
+                #     shot_item = QtWidgets.QTreeWidgetItem(ml_item, [items])
+                #     shot_button = QtWidgets.QCheckBox(parent=self.shotTree)
+                #     self.shotTree.setItemWidget(shot_item,0,shot_button)
+                
         else:
-            self.shotlist_table.setRowCount(rownumber)
-            self.shotlist_table.insertRow(rownumber)
-            self.shotlist_table.horizontalHeader().setVisible(False)
+            self.shotTree.clear()
+        
+
+        # if currentseq in self.seqsdict:
+        #     self.shotlist_table.horizontalHeader().setVisible(True)
+        #     if not currentseq == '':
+        #         for shots in self.seqsdict[currentseq]:
+        #             self.shotlist_table.setRowCount(rownumber)
+        #             self.shotlist_table.insertRow(rownumber)
+        #             self.shotlist_table.setItem(rownumber,0,QtWidgets.QTableWidgetItem(shots))
+        #             rownumber = rownumber + 1
+        # else:
+        #     self.shotlist_table.setRowCount(rownumber)
+        #     self.shotlist_table.insertRow(rownumber)
+        #     self.shotlist_table.horizontalHeader().setVisible(False)
 
 
         # self.shotlist_table.setRowCount(rownumber)
