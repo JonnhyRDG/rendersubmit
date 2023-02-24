@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>818</width>
-    <height>1457</height>
+    <width>860</width>
+    <height>1312</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,27 +16,49 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="label_4">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>200</height>
-       </size>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="pixmap">
-       <pixmap>../../../../AndreJukebox_dev/Logo/andrelogo02_small.png</pixmap>
-      </property>
-      <property name="scaledContents">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="header_layout" stretch="1">
+     <layout class="QHBoxLayout" name="header_layout" stretch="0,0,1,0,0,0">
       <item>
+       <widget class="QLabel" name="label_4">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>89</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap>../../../../AndreJukebox_dev/Logo/andrelogo02_small.png</pixmap>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Minimum</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item alignment="Qt::AlignHCenter">
        <widget class="QLabel" name="label_3">
         <property name="font">
          <font>
@@ -62,6 +84,45 @@
         </property>
        </widget>
       </item>
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
      </layout>
     </item>
     <item>
@@ -72,7 +133,7 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="top_epseq_layout">
+     <layout class="QHBoxLayout" name="top_epseq_layout" stretch="1,1">
       <item>
        <layout class="QHBoxLayout" name="episode_layout" stretch="0,0">
         <item>
@@ -105,7 +166,7 @@
           </property>
           <property name="font">
            <font>
-            <pointsize>14</pointsize>
+            <pointsize>12</pointsize>
            </font>
           </property>
          </widget>
@@ -114,7 +175,7 @@
       </item>
       <item>
        <layout class="QHBoxLayout" name="sequence_layout" stretch="0,0">
-        <item>
+        <item alignment="Qt::AlignRight">
          <widget class="QLabel" name="sequence_label">
           <property name="font">
            <font>
@@ -132,7 +193,7 @@
          <widget class="QComboBox" name="sequence_comboBox">
           <property name="font">
            <font>
-            <pointsize>14</pointsize>
+            <pointsize>12</pointsize>
            </font>
           </property>
          </widget>
@@ -272,7 +333,7 @@
        <widget class="QPushButton" name="submit_push">
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
+          <pointsize>12</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
@@ -286,7 +347,7 @@
        <widget class="QPushButton" name="publish_push">
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
+          <pointsize>12</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
@@ -300,7 +361,7 @@
        <widget class="QPushButton" name="publishsubmit_push">
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
+          <pointsize>12</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
@@ -320,16 +381,20 @@
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="label_5">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>AJ Render Submitter® Version v0.0.1 developed by Jonathan W. Rodegher</string>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item alignment="Qt::AlignRight|Qt::AlignVCenter">
+       <widget class="QLabel" name="label_5">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>AJ Render Submitter® Version v0.0.1 developed by Jonathan W. Rodegher</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
