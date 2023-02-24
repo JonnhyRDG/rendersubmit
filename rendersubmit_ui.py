@@ -2,6 +2,7 @@ import os
 import sys
 import json
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
+import rendersubmit
 
 # Esto carga el archivo .ui
 ui_path = os.path.join(os.path.dirname(__file__), 'rendersubmit_ui.ui')
@@ -62,23 +63,24 @@ class renderSubmit(base_class, generated_class):
         self.episode_comboBox.addItems(episodes)
         
     def createkeyshots(self):
-        currentseq = str(self.sequence_comboBox.currentText())
-        if not currentseq == '':
+        self.currentseq = str(self.sequence_comboBox.currentText())
+        if not self.currentseq == '':
             self.shotTree.clear()
             self.shotTree.setHeaderHidden(False)
             headers = ['Shots']
+            unique_shots = []
             for layer in self.layers:
                 headers.append(layer)
                 self.shotTree.setHeaderLabels(headers)
 
 
-            for items in self.seqsdict[currentseq]:
-                if self.seqsdict[currentseq][items]['type'] == 'key':
+            for items in self.seqsdict[self.currentseq]:
+                if self.seqsdict[self.currentseq][items]['type'] == 'key':
                         ml_item = QtWidgets.QTreeWidgetItem(self.shotTree, [items])
                         ml_button = QtWidgets.QLabel(parent=self.shotTree)
                         self.shotTree.setItemWidget(ml_item,0,ml_button)
                         ml_item.setExpanded(True)
-                        childlist = self.seqsdict[currentseq][items]['childs'].rsplit(",")
+                        childlist = self.seqsdict[self.currentseq][items]['childs'].rsplit(",")
                         for childshots in childlist:
                             layercolumn = 1
                             shot_item = QtWidgets.QTreeWidgetItem(ml_item, [childshots])
@@ -89,16 +91,23 @@ class renderSubmit(base_class, generated_class):
                                 self.shotTree.setItemWidget(shot_item,layercolumn,check_button)
                                 layercolumn = layercolumn + 1
 
-                if self.seqsdict[currentseq][items]['type'] == 'unique':
-                    unique_item = QtWidgets.QTreeWidgetItem(self.shotTree, [items])
-                    unique_button = QtWidgets.QLabel(parent=self.shotTree)
-                    self.shotTree.setItemWidget(unique_item,0,unique_button)
+                if self.seqsdict[self.currentseq][items]['type'] == 'unique':
+                    unique_shots.append(items)
+            
+            if unique_shots:
+                unique_hierarchy = QtWidgets.QTreeWidgetItem(self.shotTree, ['uniques'])
+                unique_item = QtWidgets.QLabel(self.shotTree)
+                self.shotTree.setItemWidget(unique_hierarchy,0,unique_item)
+                unique_hierarchy.setExpanded(True)
+                for un_shots in unique_shots:
+                    uniqueshot_item = QtWidgets.QTreeWidgetItem(unique_hierarchy, [un_shots])
+                    uniqueshot_button = QtWidgets.QLabel(parent=self.shotTree)
+                    self.shotTree.setItemWidget(uniqueshot_item,0,uniqueshot_button)
                     uniquecolumn = 1
                     for ls in range(len(self.layers)):
                         uniquecheck_button = QtWidgets.QCheckBox(parent=self.shotTree)
-                        self.shotTree.setItemWidget(unique_item,uniquecolumn,uniquecheck_button)
+                        self.shotTree.setItemWidget(uniqueshot_item,uniquecolumn,uniquecheck_button)
                         uniquecolumn = uniquecolumn + 1
-                        unique_button.setAlignment(QtCore.Qt.AlignCenter)
 
         else:
             self.shotTree.clear()
@@ -124,7 +133,11 @@ class renderSubmit(base_class, generated_class):
                         layers_to_render.append(layer)
                 if layers_to_render:
                     render_dict[shot_name] = layers_to_render
-        print(render_dict)        
+        rendersubmit.rendersubmit().submit(seq=self.currentseq, shotsdict=render_dict)
+        submit_done = QtWidgets.QMessageBox(parent=self.shotTree,text='Shots have been submitted to DEADLINE')
+        submit_done.show()
+        print('___Submit donde!!!___')
+
 
     def connect_buttons(self):
         self.sequence_comboBox.currentIndexChanged.connect(self.createkeyshots)
