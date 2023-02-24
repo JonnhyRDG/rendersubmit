@@ -36,15 +36,13 @@ class renderSubmit(base_class, generated_class):
         self.populateCombo()
 
         # Setteamos los callcacks a los items
-        self.sequence_comboBox.currentIndexChanged.connect(self.createkeyshots)
-        # self.shotTree.setHeaderLabel('Shots')
-        # self.shotTree.setHeaderLabel('env_all')
-
-        # QtWidgets.QTreeWidgetItem.col
+        
 
         delegate = AlignDelegate(self.shotTree)
         self.shotTree.setItemDelegate(delegate)
         self.shotTree.setAlternatingRowColors(True)
+
+        self.connect_buttons()
 
         self.layers = ['env_all','env_bg','char_all','char_andre','fx_smoke','char_cigar','env_skyscraper']
 
@@ -106,34 +104,31 @@ class renderSubmit(base_class, generated_class):
             self.shotTree.clear()
             self.shotTree.setHeaderHidden(True)
 
-        # if currentseq in self.seqsdict:
-        #     self.shotlist_table.horizontalHeader().setVisible(True)
-        #     if not currentseq == '':
-        #         for shots in self.seqsdict[currentseq]:
-        #             self.shotlist_table.setRowCount(rownumber)
-        #             self.shotlist_table.insertRow(rownumber)
-        #             self.shotlist_table.setItem(rownumber,0,QtWidgets.QTableWidgetItem(shots))
-        #             rownumber = rownumber + 1
-        # else:
-        #     self.shotlist_table.setRowCount(rownumber)
-        #     self.shotlist_table.insertRow(rownumber)
-        #     self.shotlist_table.horizontalHeader().setVisible(False)
+    
+    def onRender(self):
+        render_dict = {}
+        root = self.shotTree.invisibleRootItem()
+        key_count = root.childCount() #rows
 
-
-        # self.shotlist_table.setRowCount(rownumber)
-        # self.shotlist_table.setColumnCount(1)
-        # rowposition = self.shotlist_table.rowCount()
-        # colposition = self.shotlist_table.columnCount()
-        # self.shotlist_table.insertRow(rowposition)
-        # self.shotlist_table.insertColumn(colposition)
         
-        # rowposition = 0
-        # if currentseq in self.seqsdict:
-        #     self.shotlist_table.setHorizontalHeaderLabels(['shot'])
-        #     for shotlist in self.seqsdict[currentseq]:
-        #         self.shotlist_table.setItem(rowposition,0,QtWidgets.QTableWidgetItem(shotlist))
-        #         # self.shotlist_table.setItem(rowposition,1,QtWidgets.QTableWidgetItem('env_all'))
-        #         rowposition = rowposition + 1
+        for i in range(key_count):
+            key_item = root.child(i)
+            child_count = key_item.childCount()
+            for child_index in range(child_count):
+                shot_name = key_item.child(child_index).text(0)
+                layers_to_render = []        
+                for j in range(len(self.layers)):
+                    checkbox = self.shotTree.itemWidget(key_item.child(child_index), j+1)
+                    if checkbox and checkbox.isChecked():
+                        layer = self.layers[j]
+                        layers_to_render.append(layer)
+                if layers_to_render:
+                    render_dict[shot_name] = layers_to_render
+        print(render_dict)        
+
+    def connect_buttons(self):
+        self.sequence_comboBox.currentIndexChanged.connect(self.createkeyshots)
+        self.submit_push.clicked.connect(self.onRender)
 
 # def registerPanel():
 #     import nuke
