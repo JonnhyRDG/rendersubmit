@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>860</width>
-    <height>1312</height>
+    <width>861</width>
+    <height>930</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QHBoxLayout" name="header_layout" stretch="0,0,1,0,0,0">
+     <layout class="QHBoxLayout" name="header_layout" stretch="0,0,1,0,0,0,0">
       <item>
        <widget class="QLabel" name="label_4">
         <property name="sizePolicy">
@@ -85,6 +85,22 @@
        </widget>
       </item>
       <item>
+       <spacer name="horizontalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>25</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <spacer name="horizontalSpacer_4">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -135,7 +151,20 @@
     <item>
      <layout class="QHBoxLayout" name="top_epseq_layout" stretch="1,1">
       <item>
-       <layout class="QHBoxLayout" name="episode_layout" stretch="0,0">
+       <layout class="QHBoxLayout" name="episode_layout" stretch="0,0,0">
+        <item>
+         <spacer name="horizontalSpacer_8">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item>
          <widget class="QLabel" name="episode_label">
           <property name="sizePolicy">
@@ -146,7 +175,7 @@
           </property>
           <property name="font">
            <font>
-            <pointsize>16</pointsize>
+            <pointsize>14</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -159,14 +188,20 @@
         <item>
          <widget class="QComboBox" name="episode_comboBox">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
             <horstretch>1</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>35</height>
+           </size>
+          </property>
           <property name="font">
            <font>
-            <pointsize>12</pointsize>
+            <pointsize>11</pointsize>
            </font>
           </property>
          </widget>
@@ -174,12 +209,12 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="sequence_layout" stretch="0,0">
+       <layout class="QHBoxLayout" name="sequence_layout" stretch="0,0,0">
         <item alignment="Qt::AlignRight">
          <widget class="QLabel" name="sequence_label">
           <property name="font">
            <font>
-            <pointsize>16</pointsize>
+            <pointsize>14</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -191,12 +226,40 @@
         </item>
         <item>
          <widget class="QComboBox" name="sequence_comboBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>35</height>
+           </size>
+          </property>
           <property name="font">
            <font>
-            <pointsize>12</pointsize>
+            <pointsize>11</pointsize>
            </font>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_9">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
@@ -212,7 +275,7 @@
     <item>
      <layout class="QHBoxLayout" name="enable_disable_layout">
       <item>
-       <widget class="QPushButton" name="enableakeys_push">
+       <widget class="QPushButton" name="enablekeys_push">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
@@ -282,43 +345,91 @@
      </widget>
     </item>
     <item>
-     <widget class="QTreeWidget" name="shotTree">
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
+     <layout class="QHBoxLayout" name="shotTree_layout" stretch="0,1,0">
+      <property name="spacing">
+       <number>1</number>
       </property>
-      <property name="tabletTracking">
-       <bool>true</bool>
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
       </property>
-      <property name="lineWidth">
-       <number>2</number>
-      </property>
-      <property name="selectionMode">
-       <enum>QAbstractItemView::MultiSelection</enum>
-      </property>
-      <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectItems</enum>
-      </property>
-      <property name="autoExpandDelay">
-       <number>0</number>
-      </property>
-      <property name="uniformRowHeights">
-       <bool>false</bool>
-      </property>
-      <property name="allColumnsShowFocus">
-       <bool>false</bool>
-      </property>
-      <property name="columnCount">
-       <number>0</number>
-      </property>
-      <attribute name="headerCascadingSectionResizes">
-       <bool>true</bool>
-      </attribute>
-      <attribute name="headerHighlightSections">
-       <bool>true</bool>
-      </attribute>
-     </widget>
+      <item>
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>15</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QTreeWidget" name="shotTree">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="tabletTracking">
+         <bool>true</bool>
+        </property>
+        <property name="lineWidth">
+         <number>2</number>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::MultiSelection</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectItems</enum>
+        </property>
+        <property name="autoExpandDelay">
+         <number>0</number>
+        </property>
+        <property name="uniformRowHeights">
+         <bool>false</bool>
+        </property>
+        <property name="allColumnsShowFocus">
+         <bool>false</bool>
+        </property>
+        <property name="columnCount">
+         <number>0</number>
+        </property>
+        <attribute name="headerCascadingSectionResizes">
+         <bool>true</bool>
+        </attribute>
+        <attribute name="headerHighlightSections">
+         <bool>true</bool>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>15</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </item>
     <item>
      <widget class="Line" name="line_3">
@@ -330,20 +441,6 @@
     <item>
      <layout class="QHBoxLayout" name="output_layout">
       <item>
-       <widget class="QPushButton" name="submit_push">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>SUBMIT</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="publish_push">
         <property name="font">
          <font>
@@ -354,6 +451,20 @@
         </property>
         <property name="text">
          <string>PUBLISH</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="submit_push">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>SUBMIT</string>
         </property>
        </widget>
       </item>
@@ -381,8 +492,24 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item alignment="Qt::AlignRight|Qt::AlignVCenter">
+     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>30</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item alignment="Qt::AlignRight">
        <widget class="QLabel" name="label_5">
         <property name="font">
          <font>
