@@ -128,7 +128,7 @@ class renderSubmit(base_class, generated_class):
                         layers_to_render.append(layer)
                 if layers_to_render:
                     render_dict[shot_name] = layers_to_render
-        rendersubmit.rendersubmit().submit(seq=self.currentseq, shotsdict=render_dict)
+        rendersubmit.rendersubmit().submit(seq=self.currentseq, shotsdict=render_dict,userdcc=str(self.dcc_combo.currentText()),usercomment=str(self.comment_edit.toPlainText()),userstatus=str(self.submitStatus_combo.currentText()),userchunk=str(self.tasksize_line.text()),userpriority=str(self.prio_line.text()))
         submit_done = QtWidgets.QMessageBox(parent=self.shotTree,text='Shots have been submitted to DEADLINE')
         submit_done.setWindowTitle('Submit Check')
         submit_done.show()
