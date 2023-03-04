@@ -80,6 +80,7 @@ class renderSubmit(base_class, generated_class):
                         ml_button = QtWidgets.QLabel(parent=self.shotTree)
                         self.shotTree.setItemWidget(ml_item,0,ml_button)
                         ml_item.setExpanded(True)
+                        # ml_item.setFlags(ml_item.flags() | ~QtCore.Qt.ItemIsEnabled)
                         childlist = self.seqsdict[self.currentseq][items]['childs'].rsplit(",")
                         for childshots in childlist:
                             layercolumn = 1
@@ -201,31 +202,26 @@ class renderSubmit(base_class, generated_class):
     
     def enablesel(self,sel_list,selmodel):
         root = self.shotTree.invisibleRootItem()
-        child_count = root.childCount() #rows
-        print(root)
-        for i in sel_list:
-            # print(i.text(0))
-            for f in selmodel:
-                checkbox = self.shotTree.itemWidget(i,f.column())
-                checkbox.setChecked(True)
-        # for keys in range(child_count):
-        #     key_childs = root.child(keys)
-        #     shot_child_count = key_childs.childCount()
-        #     for selected_child in range(shot_child_count):
-        #         # print(key_childs.child(selected_child))
-        #         for shotitem in selmodel:
-        #             selected_index = shotitem.row()
-        #             checkbox = self.shotTree.itemWidget(key_childs.child(selected_index),shotitem.column())
-        #             checkbox.setChecked(True)
-
-            # for shot_child in key_childs:
-            #     print(shot_child)
-            #     # checkbox = self.shotTree.itemWidget(shotchild,selitem.column())
-            #     # checkbox.setChecked(True)
-        # for selected in sel_list:
-        #     for selitem in selmodel:
-        #         checkbox = self.shotTree.itemWidget(selected,selitem.column())
-        #         checkbox.setChecked(True)
+        key_count = root.childCount() #rows
+        self.shots = []
+        for shot in range(key_count):
+            key_shots = root.child(shot)
+            child_count = key_shots.childCount()
+            for child_index in range(child_count):
+                child_shot = key_shots.child(child_index)
+                self.shots.append(child_shot)
+        checkindex = 0
+        for checkboxes in self.shots:
+            for x in range(len(sel_list)):
+                if checkboxes == sel_list[x]:
+                    print(f'model={len(selmodel)}',f'widget={len(sel_list)}')
+                    print(checkboxes.text(0),sel_list[x].text(0))
+                    checkbox = self.shotTree.itemWidget(sel_list[checkindex],selmodel[checkindex].column())
+                    # if checkbox is not None:
+                    checkbox.setChecked(True)
+                    checkindex = checkindex + 1
+                    # else:
+                    #     continue
 
     def enablelayer(self,selmodel):
         root = self.shotTree.invisibleRootItem()
@@ -234,14 +230,9 @@ class renderSubmit(base_class, generated_class):
             key_childs = root.child(keys)
             shot_child_count = key_childs.childCount()
             for selected_child in range(shot_child_count):
-                print(key_childs.child(selected_child))
                 for shotitem in selmodel:
                     checkbox = self.shotTree.itemWidget(key_childs.child(selected_child),shotitem.column())
                     checkbox.setChecked(True)
-            # for shot_child in key_childs:
-            #     print(shot_child)
-            #     # checkbox = self.shotTree.itemWidget(shotchild,selitem.column())
-            #     # checkbox.setChecked(True)
 
     def enableshot(self,selmodel):
         root = self.shotTree.invisibleRootItem()
@@ -252,10 +243,10 @@ class renderSubmit(base_class, generated_class):
     
     def onTreeContextMenuRequested(self, point):
         item = self.shotTree.itemAt(point)
+        selection = []
+        selmodel = []
         selection = self.shotTree.selectedItems()
         selmodel = self.shotTree.selectionModel().selectedIndexes()
-        # QtWidgets.QTreeWidget.selectedItems()
-
         actions = [
             {'title': "Enable selection", 'name': 'enableSelection', 'callback': partial(self.enablesel, selection, selmodel), 'enabled': True},
             {'title': "Enable shot", 'name': 'enableShot', 'callback': partial(self.enableshot, selection), 'enabled': True},
