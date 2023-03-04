@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+from functools import partial
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 import rendersubmit
 
@@ -41,10 +42,10 @@ class renderSubmit(base_class, generated_class):
         delegate = AlignDelegate(self.shotTree)
         self.shotTree.setItemDelegate(delegate)
         self.shotTree.setAlternatingRowColors(True)
-
         self.connect_buttons()
-
+        self.currentseq = str(self.sequence_comboBox.currentText())
         self.layers = ['env_all','env_bg','char_all','char_andre','fx_smoke','char_cigar','env_skyscraper']
+        self.expressionbtn.setVisible(0)
 
     def dictread(self):
         self.seqsdictjson = open('P:/AndreJukebox/aj_seq_dict.json')
@@ -112,6 +113,11 @@ class renderSubmit(base_class, generated_class):
             self.shotTree.setHeaderHidden(True)
 
     def onRender(self):
+        if self.step_check.isChecked():
+            self.stepson = 1
+        else:
+            self.stepson = 0
+
         render_dict = {}
         root = self.shotTree.invisibleRootItem()
         key_count = root.childCount() #rows
@@ -128,10 +134,15 @@ class renderSubmit(base_class, generated_class):
                         layers_to_render.append(layer)
                 if layers_to_render:
                     render_dict[shot_name] = layers_to_render
-        rendersubmit.rendersubmit().submit(seq=self.currentseq, shotsdict=render_dict,userdcc=str(self.dcc_combo.currentText()),usercomment=str(self.comment_edit.toPlainText()),userstatus=str(self.submitStatus_combo.currentText()),userchunk=str(self.tasksize_line.text()),userpriority=str(self.prio_line.text()))
-        submit_done = QtWidgets.QMessageBox(parent=self.shotTree,text='Shots have been submitted to DEADLINE')
-        submit_done.setWindowTitle('Submit Check')
-        submit_done.show()
+        if not self.currentseq == '':
+            rendersubmit.rendersubmit().submit(stepstate=self.stepson,step=self.step_spin.text(),seq=self.currentseq, framesdict=self.frame_combo.currentText(),frameexp=self.expressionbtn.text(), shotsdict=render_dict,userdcc=str(self.dcc_combo.currentText()),usercomment=str(self.comment_edit.toPlainText()),userstatus=str(self.submitStatus_combo.currentText()),userchunk=str(self.tasksize_line.text()),userpriority=str(self.prio_line.text()))
+            submit_done = QtWidgets.QMessageBox(parent=self.shotTree,text='Shots have been submitted to DEADLINE')
+            submit_done.setWindowTitle('Submit Check')
+            submit_done.show()
+        else:
+            emptyseq = QtWidgets.QMessageBox(parent=self.shotTree,text='You need to select a sequence first...GENIUS!')
+            emptyseq.setWindowTitle('Sequence check')
+            emptyseq.show()
 
     def enableAll(self):
         root = self.shotTree.invisibleRootItem()
@@ -158,8 +169,6 @@ class renderSubmit(base_class, generated_class):
     def enableKeys(self):
         root = self.shotTree.invisibleRootItem()
         key_count = root.childCount() #rows
-        root = self.shotTree.invisibleRootItem()
-        key_count = root.childCount() #rows
         keyshot = []
         for keyshots in self.seqsdict[self.currentseq]:
             if self.seqsdict[self.currentseq][keyshots]['type'] == 'key':
@@ -173,15 +182,105 @@ class renderSubmit(base_class, generated_class):
                     checkbox = self.shotTree.itemWidget(key_shots.child(child_index),j+1)
                     checkbox.setChecked(False)
                     if shotname in keyshot:
-                        # checkbox = self.shotTree.itemWidget(key_shots.child(child_index),j+1)
                         checkbox.setChecked(True)
 
+    def framesui(self):
+        self.expressionbtn.setVisible(0)
+        if self.frame_combo.currentText() == "Expression":# and self.frames_layout.count() == 0:
+            self.expressionbtn.setVisible(1)
+        else:
+            if self.expressionbtn:
+                self.expressionbtn.setVisible(0)
+                self.frames_layout.removeWidget(self.expressionbtn)
+
+    def stepspin(self):
+        if self.step_check.isChecked():
+            self.step_spin.setReadOnly(0)
+        else:
+            self.step_spin.setReadOnly(1)
+    
+    def enablesel(self,sel_list,selmodel):
+        root = self.shotTree.invisibleRootItem()
+        child_count = root.childCount() #rows
+        print(root)
+        for i in sel_list:
+            # print(i.text(0))
+            for f in selmodel:
+                checkbox = self.shotTree.itemWidget(i,f.column())
+                checkbox.setChecked(True)
+        # for keys in range(child_count):
+        #     key_childs = root.child(keys)
+        #     shot_child_count = key_childs.childCount()
+        #     for selected_child in range(shot_child_count):
+        #         # print(key_childs.child(selected_child))
+        #         for shotitem in selmodel:
+        #             selected_index = shotitem.row()
+        #             checkbox = self.shotTree.itemWidget(key_childs.child(selected_index),shotitem.column())
+        #             checkbox.setChecked(True)
+
+            # for shot_child in key_childs:
+            #     print(shot_child)
+            #     # checkbox = self.shotTree.itemWidget(shotchild,selitem.column())
+            #     # checkbox.setChecked(True)
+        # for selected in sel_list:
+        #     for selitem in selmodel:
+        #         checkbox = self.shotTree.itemWidget(selected,selitem.column())
+        #         checkbox.setChecked(True)
+
+    def enablelayer(self,selmodel):
+        root = self.shotTree.invisibleRootItem()
+        child_count = root.childCount() #rows
+        for keys in range(child_count):
+            key_childs = root.child(keys)
+            shot_child_count = key_childs.childCount()
+            for selected_child in range(shot_child_count):
+                print(key_childs.child(selected_child))
+                for shotitem in selmodel:
+                    checkbox = self.shotTree.itemWidget(key_childs.child(selected_child),shotitem.column())
+                    checkbox.setChecked(True)
+            # for shot_child in key_childs:
+            #     print(shot_child)
+            #     # checkbox = self.shotTree.itemWidget(shotchild,selitem.column())
+            #     # checkbox.setChecked(True)
+
+    def enableshot(self,selmodel):
+        root = self.shotTree.invisibleRootItem()
+        for selected_shots in selmodel:
+            for j in range(len(self.layers)):
+                checkbox = self.shotTree.itemWidget(selected_shots,j+1)
+                checkbox.setChecked(True)
+    
+    def onTreeContextMenuRequested(self, point):
+        item = self.shotTree.itemAt(point)
+        selection = self.shotTree.selectedItems()
+        selmodel = self.shotTree.selectionModel().selectedIndexes()
+        # QtWidgets.QTreeWidget.selectedItems()
+
+        actions = [
+            {'title': "Enable selection", 'name': 'enableSelection', 'callback': partial(self.enablesel, selection, selmodel), 'enabled': True},
+            {'title': "Enable shot", 'name': 'enableShot', 'callback': partial(self.enableshot, selection), 'enabled': True},
+            {'title': "Enable layer", 'name': 'enableLayer', 'callback': partial(self.enablelayer, selmodel), 'enabled': True}
+            ]
+
+        self.menu = QtWidgets.QMenu()
+        for action_data in actions:
+            action = self.menu.addAction(action_data['title'])
+            action.setObjectName(action_data['name'])
+            action.setEnabled(action_data['enabled'])
+            action.triggered.connect(action_data['callback'])
+        self.menu.popup(QtGui.QCursor.pos())
+
+
     def connect_buttons(self):
+        self.shotTree.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.shotTree.customContextMenuRequested.connect(self.onTreeContextMenuRequested)
         self.sequence_comboBox.currentIndexChanged.connect(self.createkeyshots)
         self.submit_push.clicked.connect(self.onRender)
         self.enableall_push.clicked.connect(self.enableAll)
         self.disableall_push.clicked.connect(self.disableAll)
         self.enablekeys_push.clicked.connect(self.enableKeys)
+        self.frame_combo.currentIndexChanged.connect(self.framesui)
+        self.step_check.clicked.connect(self.stepspin)
 
 
 # def registerPanel():
