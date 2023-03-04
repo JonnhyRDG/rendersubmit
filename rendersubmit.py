@@ -10,7 +10,7 @@ class rendersubmit():
         self.seqsdict = json.load(self.seqsdictjson)
 
     # jobs file
-    def joboptions(self,seq,shotsdict,userdcc,userstatus,usercomment,userpriority,userchunk):
+    def joboptions(self,seq,shotsdict,userdcc,userstatus,usercomment,userpriority,userchunk,framesdict):
         # add arguments to jobargs list
         self.jobargs = []
 
@@ -55,16 +55,28 @@ class rendersubmit():
     
     
     
-    def submit(self,seq,shotsdict,userdcc,userstatus,usercomment,userpriority,userchunk):
+    def submit(self,seq,shotsdict,userdcc,userstatus,usercomment,userpriority,userchunk,framesdict,frameexp,step,stepstate):
         for shots in shotsdict:
             framestart = self.seqsdict[seq][shots]['start']
             frameend = self.seqsdict[seq][shots]['end']
             for layer in shotsdict[shots]:
+                fmlframes = []
+                middleframe = int((((int(frameend)) - (int(framestart)))/2)+1000)
+                fmlframes.append(framestart)
+                fmlframes.append(middleframe)
+                fmlframes.append(frameend)
+                fmlstring = ",".join(str(frm) for frm in fmlframes)
+                frames_dict = {}
+                frames_dict['Expression']= frameexp if stepstate == 0 else f'{frameexp}x{step}'
+                frames_dict['FML']= fmlstring 
+                frames_dict['Shotinfo']= f'{framestart}-{frameend}' if stepstate == 0 else f'{framestart}-{frameend}x{step}'
+
                 # ---- writing jobs file
-                self.joboptions(seq,shotsdict,userdcc,userstatus,usercomment,userpriority,userchunk)
+                self.joboptions(seq,shotsdict,userdcc,userstatus,usercomment,userpriority,userchunk,framesdict)
                 jobname = f'Name={seq}-{shots} - {layer}'
                 self.jobargs.append(jobname)
-                frames = f'Frames={framestart}-{frameend}'
+                frames = f'Frames={frames_dict[framesdict]}'
+                # frames = f'Frames={framestart}-{frameend}'
                 self.jobargs.append(frames)
                 
                 outputpathrgba = f'OutputDirectory0=P:/AndreJukebox_output/renders/concept_animatic/{seq}/{shots}/lgt/{layer}/latest/rgba'
@@ -73,8 +85,8 @@ class rendersubmit():
                 outputfilergba = f'OutputFilename0={layer}_rgba.####.linear.exr'
                 self.jobargs.append(outputfilergba)
                 
-                outputpath = f'OutputDirectory1=P:/AndreJukebox_output/renders/concept_animatic/{seq}/{shots}/lgt/{layer}/latest'
-                self.jobargs.append(outputpath)
+                # outputpath = f'OutputDirectory1=P:/AndreJukebox_output/renders/concept_animatic/{seq}/{shots}/lgt/{layer}/latest'
+                # self.jobargs.append(outputpath)
                 
                 batchname = f'BatchName={seq}-{shots}'
                 self.jobargs.append(batchname)
@@ -89,18 +101,6 @@ class rendersubmit():
                 seqvar = f'varSeq=seq={seq}'
                 self.plugargs.append(seqvar)
                 self.writeplugs()
-
-                # # ---- writing cmds file
-                # self.cmdsoptions()
-                # seqvar = f'--var shot={seq}'
-                # self.cmdsargs.append(seqvar)
-                # shotvar = f'--var shot={shots}'
-                # self.cmdsargs.append(shotvar)
-                # layervar = f'--var shot={layer}'
-                # self.cmdsargs.append(layervar)
-                # renderfile = f'"P:/AndreJukebox/seq/{seq}/{shots}/lighting/shot.katana"'
-                # self.cmdsargs.append(renderfile)
-                # self.writecmds()
 
                 command = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/plugins.txt" "P:/AndreJukebox/seq/{seq}/{shots}/lighting/shot.katana"'
                 subprocess.call(command, shell=True)
