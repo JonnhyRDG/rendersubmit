@@ -575,7 +575,7 @@ QTreeView
 	border: 1px solid gray;
 	padding-top : 5px;
 	color: #fff;
-	font: 11pt;
+	font: 12pt;
 
 }
 
@@ -700,10 +700,10 @@ QCheckBox::indicator
 {
     background-color: #323232;
     border: 1px solid darkgray;
-    width: 16px;
-    height: 16px;
-	
-}
+    width: 17px;
+    height: 17px;
+
+	}
 
 
 QCheckBox::indicator:checked

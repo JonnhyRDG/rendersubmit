@@ -102,7 +102,7 @@ class rendersubmit():
                 self.plugargs.append(seqvar)
                 self.writeplugs()
 
-                command = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/plugins.txt" "P:/AndreJukebox/seq/{seq}/{shots}/lighting/shot.katana"'
+                command = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/plugins.txt" "P:/AndreJukebox/seq/{seq}/s0000/lighting/shot.katana"'
                 subprocess.call(command, shell=True)
                 # command = f'deadlinecommand -SubmitCommandLineJob -prop Comment="{usercomment}" -priority "{userpriority}" -chunksize "{userchunk}" -executable "P:\AndreJukebox\pipe\katana4.bat" -name "{seq}_{shots} - {layer}" -initialstatus "{userstatus}" -arguments "--batch --katana-file=""P:\AndreJukebox\seq\{seq}\{shots}\lighting\shot.katana"" --render-node={layer} " -frames {framestart}-{frameend}'
                 
