@@ -310,6 +310,19 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="enableunique_push">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <kerning>true</kerning>
+             </font>
+            </property>
+            <property name="text">
+             <string>Enable Uniques</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="disableall_push">
             <property name="font">
              <font>
@@ -322,27 +335,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="enableasel_push">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-              <kerning>true</kerning>
-             </font>
-            </property>
-            <property name="text">
-             <string>Enable Selected</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="disablesel_push">
+           <widget class="QPushButton" name="clearsel_push">
             <property name="font">
              <font>
               <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
-             <string>Disable Selected</string>
+             <string>Clear Selection</string>
             </property>
            </widget>
           </item>

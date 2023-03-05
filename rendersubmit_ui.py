@@ -73,14 +73,12 @@ class renderSubmit(base_class, generated_class):
                 headers.append(layer)
                 self.shotTree.setHeaderLabels(headers)
 
-
             for items in self.seqsdict[self.currentseq]:
                 if self.seqsdict[self.currentseq][items]['type'] == 'key':
                         ml_item = QtWidgets.QTreeWidgetItem(self.shotTree, [items])
                         ml_button = QtWidgets.QLabel(parent=self.shotTree)
                         self.shotTree.setItemWidget(ml_item,0,ml_button)
                         ml_item.setExpanded(True)
-                        # ml_item.setFlags(ml_item.flags() | ~QtCore.Qt.ItemIsEnabled)
                         childlist = self.seqsdict[self.currentseq][items]['childs'].rsplit(",")
                         for childshots in childlist:
                             layercolumn = 1
@@ -185,6 +183,24 @@ class renderSubmit(base_class, generated_class):
                     if shotname in keyshot:
                         checkbox.setChecked(True)
 
+    def enableUniques(self):
+        root = self.shotTree.invisibleRootItem()
+        key_count = root.childCount() #rows
+        keyshot = []
+        for keyshots in self.seqsdict[self.currentseq]:
+            if self.seqsdict[self.currentseq][keyshots]['type'] == 'unique':
+                keyshot.append(keyshots)
+        for shot_count in range(key_count):
+            key_shots = root.child(shot_count)
+            child_count = key_shots.childCount()
+            for child_index in range(child_count):
+                shotname = key_shots.child(child_index).text(0)
+                for j in range(len(self.layers)):
+                    checkbox = self.shotTree.itemWidget(key_shots.child(child_index),j+1)
+                    checkbox.setChecked(False)
+                    if shotname in keyshot:
+                        checkbox.setChecked(True)
+
     def framesui(self):
         self.expressionbtn.setVisible(0)
         if self.frame_combo.currentText() == "Expression":# and self.frames_layout.count() == 0:
@@ -200,28 +216,17 @@ class renderSubmit(base_class, generated_class):
         else:
             self.step_spin.setReadOnly(1)
     
-    def enablesel(self,sel_list,selmodel):
+    def enablesel(self,selmodel):
         root = self.shotTree.invisibleRootItem()
-        key_count = root.childCount() #rows
-        self.shots = []
-        for shot in range(key_count):
-            key_shots = root.child(shot)
-            child_count = key_shots.childCount()
-            for child_index in range(child_count):
-                child_shot = key_shots.child(child_index)
-                self.shots.append(child_shot)
-        checkindex = 0
-        for checkboxes in self.shots:
-            for x in range(len(sel_list)):
-                if checkboxes == sel_list[x]:
-                    print(f'model={len(selmodel)}',f'widget={len(sel_list)}')
-                    print(checkboxes.text(0),sel_list[x].text(0))
-                    checkbox = self.shotTree.itemWidget(sel_list[checkindex],selmodel[checkindex].column())
-                    # if checkbox is not None:
+        for parent in selmodel:
+            key_shot = root.child(parent.parent().row())
+            if hasattr(key_shot,'child'):
+                shot_child = key_shot.child(parent.row())
+                checkbox = self.shotTree.itemWidget(shot_child,parent.column())
+                if hasattr(checkbox, 'setChecked'):
                     checkbox.setChecked(True)
-                    checkindex = checkindex + 1
-                    # else:
-                    #     continue
+                else:
+                    continue
 
     def enablelayer(self,selmodel):
         root = self.shotTree.invisibleRootItem()
@@ -232,23 +237,41 @@ class renderSubmit(base_class, generated_class):
             for selected_child in range(shot_child_count):
                 for shotitem in selmodel:
                     checkbox = self.shotTree.itemWidget(key_childs.child(selected_child),shotitem.column())
-                    checkbox.setChecked(True)
+                    if hasattr(checkbox, 'setChecked'):
+                        checkbox.setChecked(True)
+                    else:
+                        continue
 
     def enableshot(self,selmodel):
         root = self.shotTree.invisibleRootItem()
         for selected_shots in selmodel:
             for j in range(len(self.layers)):
                 checkbox = self.shotTree.itemWidget(selected_shots,j+1)
-                checkbox.setChecked(True)
-    
+                if hasattr(checkbox,'setChecked'):
+                    checkbox.setChecked(True)
+                else:
+                    continue
+
+    def clearselected(self):
+        root = self.shotTree.invisibleRootItem()
+        key_count = root.childCount() #rows
+        for shot_count in range(key_count):
+            key_shots = root.child(shot_count)
+            if hasattr(key_shots,'setSelected'):
+                key_shots.setSelected(False)
+            child_count = key_shots.childCount()
+            for child_index in range(child_count):
+                for j in range(len(self.layers)):
+                    cell = key_shots.child(child_index)
+                    if hasattr(cell,'setSelected'):
+                        cell.setSelected(False)
+
     def onTreeContextMenuRequested(self, point):
         item = self.shotTree.itemAt(point)
-        selection = []
-        selmodel = []
         selection = self.shotTree.selectedItems()
         selmodel = self.shotTree.selectionModel().selectedIndexes()
         actions = [
-            {'title': "Enable selection", 'name': 'enableSelection', 'callback': partial(self.enablesel, selection, selmodel), 'enabled': True},
+            {'title': "Enable selection", 'name': 'enableSelection', 'callback': partial(self.enablesel, selmodel), 'enabled': True},
             {'title': "Enable shot", 'name': 'enableShot', 'callback': partial(self.enableshot, selection), 'enabled': True},
             {'title': "Enable layer", 'name': 'enableLayer', 'callback': partial(self.enablelayer, selmodel), 'enabled': True}
             ]
@@ -272,6 +295,9 @@ class renderSubmit(base_class, generated_class):
         self.enablekeys_push.clicked.connect(self.enableKeys)
         self.frame_combo.currentIndexChanged.connect(self.framesui)
         self.step_check.clicked.connect(self.stepspin)
+        self.clearsel_push.clicked.connect(self.clearselected)
+        self.enableunique_push.clicked.connect(self.enableUniques)
+        
 
 
 # def registerPanel():
