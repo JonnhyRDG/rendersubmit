@@ -4,6 +4,9 @@ import json
 from functools import partial
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 import rendersubmit
+# from Deadline.DeadlineConnect import DeadlineCon as Connect
+# con = Connect('WebServiceName', 8081)
+# con.Groups.GetGroupNames()
 
 # Esto carga el archivo .ui
 ui_path = os.path.join(os.path.dirname(__file__), 'rendersubmit_ui.ui')
@@ -134,7 +137,7 @@ class renderSubmit(base_class, generated_class):
                 if layers_to_render:
                     render_dict[shot_name] = layers_to_render
         if not self.currentseq == '':
-            rendersubmit.rendersubmit().submit(stepstate=self.stepson,step=self.step_spin.text(),seq=self.currentseq, framesdict=self.frame_combo.currentText(),frameexp=self.expressionbtn.text(), shotsdict=render_dict,userdcc=str(self.dcc_combo.currentText()),usercomment=str(self.comment_edit.toPlainText()),userstatus=str(self.submitStatus_combo.currentText()),userchunk=str(self.tasksize_line.text()),userpriority=str(self.prio_line.text()))
+            rendersubmit.rendersubmit().submit(stepstate=self.stepson,step=self.step_spin.text(),seq=self.currentseq, framesdict=self.frame_combo.currentText(),frameexp=self.expressionbtn.text(), shotsdict=render_dict,userdcc=str(self.dcc_combo.currentText()),usercomment=str(self.comment_edit.toPlainText()),userstatus=str(self.submitStatus_combo.currentText()),userchunk=str(self.tasksize_line.text()),userpriority=str(self.prio_line.text()),pool=str(self.group_combo.currentText()))
             submit_done = QtWidgets.QMessageBox(parent=self.shotTree,text='Shots have been submitted to DEADLINE')
             submit_done.setWindowTitle('Submit Check')
             submit_done.show()

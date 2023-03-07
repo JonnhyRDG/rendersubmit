@@ -575,7 +575,7 @@ QTreeView
 	border: 1px solid gray;
 	padding-top : 5px;
 	color: #fff;
-	font: 12pt;
+	font: 14pt;
 
 }
 
