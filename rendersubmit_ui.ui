@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1128</width>
-    <height>1014</height>
+    <width>1173</width>
+    <height>1238</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -251,7 +251,7 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>11</pointsize>
+                <pointsize>12</pointsize>
                </font>
               </property>
              </widget>
@@ -289,7 +289,7 @@
            <widget class="QPushButton" name="enablekeys_push">
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -301,7 +301,7 @@
            <widget class="QPushButton" name="enableall_push">
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -313,7 +313,7 @@
            <widget class="QPushButton" name="enableunique_push">
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <pointsize>11</pointsize>
               <kerning>true</kerning>
              </font>
             </property>
@@ -326,7 +326,7 @@
            <widget class="QPushButton" name="disableall_push">
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -338,7 +338,7 @@
            <widget class="QPushButton" name="clearsel_push">
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -648,7 +648,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>90</y>
+            <y>130</y>
             <width>331</width>
             <height>32</height>
            </rect>
@@ -694,7 +694,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>130</y>
+            <y>170</y>
             <width>331</width>
             <height>31</height>
            </rect>
@@ -736,10 +736,10 @@
          <widget class="QWidget" name="verticalLayoutWidget_4">
           <property name="geometry">
            <rect>
-            <x>20</x>
-            <y>699</y>
+            <x>10</x>
+            <y>1000</y>
             <width>311</width>
-            <height>171</height>
+            <height>101</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="comment_vlayout">
@@ -765,7 +765,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>210</y>
+            <y>250</y>
             <width>331</width>
             <height>31</height>
            </rect>
@@ -821,10 +821,10 @@
          <widget class="QWidget" name="verticalLayoutWidget_3">
           <property name="geometry">
            <rect>
-            <x>9</x>
-            <y>249</y>
+            <x>10</x>
+            <y>290</y>
             <width>331</width>
-            <height>31</height>
+            <height>41</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="frames_layout">
@@ -858,7 +858,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>170</y>
+            <y>210</y>
             <width>331</width>
             <height>31</height>
            </rect>
@@ -892,6 +892,55 @@
              <property name="value">
               <number>1</number>
              </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="horizontalLayoutWidget_2">
+          <property name="geometry">
+           <rect>
+            <x>9</x>
+            <y>89</y>
+            <width>331</width>
+            <height>32</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="group_layout">
+           <item>
+            <widget class="QLabel" name="group_label">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Group</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="group_combo">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <item>
+              <property name="text">
+               <string>none</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>rendernode</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>workstation</string>
+              </property>
+             </item>
             </widget>
            </item>
           </layout>
