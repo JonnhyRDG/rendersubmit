@@ -4,9 +4,6 @@ import json
 from functools import partial
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 import rendersubmit
-# from Deadline.DeadlineConnect import DeadlineCon as Connect
-# con = Connect('WebServiceName', 8081)
-# con.Groups.GetGroupNames()
 
 # Esto carga el archivo .ui
 ui_path = os.path.join(os.path.dirname(__file__), 'rendersubmit_ui.ui')
@@ -300,6 +297,7 @@ class renderSubmit(base_class, generated_class):
         self.step_check.clicked.connect(self.stepspin)
         self.clearsel_push.clicked.connect(self.clearselected)
         self.enableunique_push.clicked.connect(self.enableUniques)
+        
         
 
 
