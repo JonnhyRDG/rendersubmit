@@ -30,6 +30,7 @@ def savescript(seq,shot):
     savefile = f'P:/AndreJukebox_output/comp/concept_animatic/{seq}/{shot}/workfile.nk'
     nuke.scriptSave(savefile) #('P:/AndreJukebox_output/comp/concept_animatic/020_MFG/s0270/workfile.nk') #save the child key
 
+
 openscript(seq=sys.argv[1],key=sys.argv[3])
 updategsv(seq=sys.argv[1],shot=sys.argv[2])
 savescript(seq=sys.argv[1],shot=sys.argv[2])

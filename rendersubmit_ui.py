@@ -1,9 +1,12 @@
+import subprocess
 import os
 import sys
 import json
 from functools import partial
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 import rendersubmit
+nukerun = '"C:/Program Files/Nuke13.2v5/Nuke13.2.exe"'
+script = '"P:/AndreJukebox/pipe/ajbackend/rendersubmit/nukepublish.py"'
 
 # Esto carga el archivo .ui
 ui_path = os.path.join(os.path.dirname(__file__), 'rendersubmit_ui.ui')
@@ -273,7 +276,8 @@ class renderSubmit(base_class, generated_class):
         actions = [
             {'title': "Enable selection", 'name': 'enableSelection', 'callback': partial(self.enablesel, selmodel), 'enabled': True},
             {'title': "Enable shot", 'name': 'enableShot', 'callback': partial(self.enableshot, selection), 'enabled': True},
-            {'title': "Enable layer", 'name': 'enableLayer', 'callback': partial(self.enablelayer, selmodel), 'enabled': True}
+            {'title': "Enable layer", 'name': 'enableLayer', 'callback': partial(self.enablelayer, selmodel), 'enabled': True},
+            {'title': "Pull comp from key", 'name': 'pullKeyComp', 'callback': partial(self.pullKeyComp, selmodel), 'enabled': True}
             ]
 
         self.menu = QtWidgets.QMenu()
@@ -298,7 +302,37 @@ class renderSubmit(base_class, generated_class):
         self.clearsel_push.clicked.connect(self.clearselected)
         self.enableunique_push.clicked.connect(self.enableUniques)
         
-        
+    def pullKeyComp(self,selmodel):
+        root = self.shotTree.invisibleRootItem()
+        for parent in selmodel:
+            key_shot = root.child(parent.parent().row())
+            nukefile = f'P:/AndreJukebox_output/comp/concept_animatic/{self.currentseq}/{key_shot.text(0)}/workfile.nk'
+            if os.path.isfile(nukefile):
+                print('keys=',key_shot.text(0))
+                child_count = key_shot.childCount()
+                for childs in range(child_count):
+                    children = key_shot.child(childs)
+                    if self.seqsdict[self.currentseq][children.text(0)]['type'] != 'key':
+                    # print('childs=',children.text(0))
+                        nukecommand = f'{nukerun} -t {script} {self.currentseq} {children.text(0)} {key_shot.text(0)}'
+                        print(nukecommand)
+                        subprocess.call(nukecommand, shell=True)
+                    else:
+                        continue
+            else:
+                nocomp = QtWidgets.QMessageBox(parent=self.shotTree,text='There is no nuke file to pull from. Bravo!')
+                nocomp.setWindowTitle('Nuke comp check')
+                nocomp.show()
+
+            
+            # if hasattr(key_shot,'child'):
+            #     shot_child = key_shot.child(parent.row())
+            #     checkbox = self.shotTree.itemWidget(shot_child,parent.column())
+            #     if hasattr(checkbox, 'setChecked'):
+            #         checkbox.setChecked(True)
+            #     else:
+            #         continue    
+
 
 
 # def registerPanel():
