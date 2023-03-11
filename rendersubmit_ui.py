@@ -120,6 +120,7 @@ class renderSubmit(base_class, generated_class):
         else:
             self.stepson = 0
 
+        argdict = {}
         render_dict = {}
         root = self.shotTree.invisibleRootItem()
         key_count = root.childCount() #rows
@@ -136,8 +137,22 @@ class renderSubmit(base_class, generated_class):
                         layers_to_render.append(layer)
                 if layers_to_render:
                     render_dict[shot_name] = layers_to_render
+        
+        argdict['stepstate']=self.stepson
+        argdict['step']=self.step_spin.text()
+        argdict['seq']=self.currentseq
+        argdict['framesdict']=self.frame_combo.currentText()
+        argdict['frameexp']=self.expressionbtn.text()
+        argdict['shotsdict']=[render_dict]
+        argdict['userdcc']=str(self.dcc_combo.currentText())
+        argdict['usercomment']=str(self.comment_edit.toPlainText())
+        argdict['userstatus']=str(self.submitStatus_combo.currentText())
+        argdict['userchunk']=str(self.tasksize_line.text())
+        argdict['userpriority']=str(self.prio_line.text())
+        argdict['pool']=str(self.group_combo.currentText())
+        
         if not self.currentseq == '':
-            rendersubmit.rendersubmit().submit(stepstate=self.stepson,step=self.step_spin.text(),seq=self.currentseq, framesdict=self.frame_combo.currentText(),frameexp=self.expressionbtn.text(), shotsdict=render_dict,userdcc=str(self.dcc_combo.currentText()),usercomment=str(self.comment_edit.toPlainText()),userstatus=str(self.submitStatus_combo.currentText()),userchunk=str(self.tasksize_line.text()),userpriority=str(self.prio_line.text()),pool=str(self.group_combo.currentText()))
+            rendersubmit.rendersubmit().submit(katargs=argdict)
             submit_done = QtWidgets.QMessageBox(parent=self.shotTree,text='Shots have been submitted to DEADLINE')
             submit_done.setWindowTitle('Submit Check')
             submit_done.show()
