@@ -27,7 +27,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="header_layout" stretch="0,0,1,0,0,0,0">
+         <layout class="QHBoxLayout" name="header_layout" stretch="0,0,1,0,0">
           <item>
            <widget class="QLabel" name="label_4">
             <property name="sizePolicy">
@@ -39,7 +39,7 @@
             <property name="maximumSize">
              <size>
               <width>120</width>
-              <height>66</height>
+              <height>68</height>
              </size>
             </property>
             <property name="text">
@@ -96,46 +96,35 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_7">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+           <widget class="QLabel" name="dcc_image">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
+            <property name="minimumSize">
              <size>
-              <width>25</width>
-              <height>10</height>
+              <width>80</width>
+              <height>80</height>
              </size>
             </property>
-           </spacer>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
+            <property name="maximumSize">
              <size>
-              <width>40</width>
-              <height>20</height>
+              <width>80</width>
+              <height>80</height>
              </size>
             </property>
-           </spacer>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+            <property name="text">
+             <string/>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
+            <property name="pixmap">
+             <pixmap>resources/katana_icon.png</pixmap>
             </property>
-           </spacer>
+            <property name="scaledContents">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
           <item>
            <spacer name="horizontalSpacer">

@@ -5,6 +5,7 @@ import json
 from functools import partial
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 import rendersubmit
+
 nukerun = '"C:/Program Files/Nuke13.2v5/Nuke13.2.exe"'
 script = '"P:/AndreJukebox/pipe/ajbackend/rendersubmit/nukepublish.py"'
 
@@ -47,7 +48,10 @@ class renderSubmit(base_class, generated_class):
         self.shotTree.setAlternatingRowColors(True)
         self.connect_buttons()
         self.currentseq = str(self.sequence_comboBox.currentText())
-        self.layers = ['env_all','env_bg','char_all','char_andre','fx_smoke','char_cigar','env_skyscraper']
+        self.layers = {
+            'Katana':['env_all','env_bg','char_all','char_andre','fx_smoke','char_cigar','env_skyscraper'],
+            'Nuke':['write_out']
+            }
         self.expressionbtn.setVisible(0)
 
     def dictread(self):
@@ -64,15 +68,34 @@ class renderSubmit(base_class, generated_class):
         self.sequence_comboBox.addItems(self.seqcombolist)
         episodes = ['concept_animatic']
         self.episode_comboBox.addItems(episodes)
+
+    def nukeshots(self):
+        self.shotTree.clear()
+        header = ['Shots','Output']
+        self.shotTree.setHeaderLabels(header)
+        self.shotTree.setColumnCount(2)
         
     def createkeyshots(self):
         self.currentseq = str(self.sequence_comboBox.currentText())
+        icon = {
+            'Nuke': QtGui.QPixmap("P:/AndreJukebox/pipe/ajbackend/rendersubmit/resources/nuke_icon.png"),
+            'Katana': QtGui.QPixmap("P:/AndreJukebox/pipe/ajbackend/rendersubmit/resources/katana_icon.png")
+            }
+        self.dcc_image.setPixmap(icon[self.dcc_combo.currentText()])
+
+        # QtWidgets.QLabel.setPicture()
+        
+        
+
+
+        if self.dcc_combo.currentText() == "Nuke":
+            self.shotTree.setColumnCount(2)
         if not self.currentseq == '':
             self.shotTree.clear()
             self.shotTree.setHeaderHidden(False)
             headers = ['Shots']
             unique_shots = []
-            for layer in self.layers:
+            for layer in self.layers[self.dcc_combo.currentText()]:
                 headers.append(layer)
                 self.shotTree.setHeaderLabels(headers)
 
@@ -88,7 +111,7 @@ class renderSubmit(base_class, generated_class):
                             shot_item = QtWidgets.QTreeWidgetItem(ml_item, [childshots])
                             shot_button = QtWidgets.QLabel(parent=self.shotTree)
                             self.shotTree.setItemWidget(shot_item,0,shot_button)
-                            for ls in range(len(self.layers)):
+                            for ls in range(len(self.layers[self.dcc_combo.currentText()])):
                                 check_button = QtWidgets.QCheckBox(parent=self.shotTree)
                                 self.shotTree.setItemWidget(shot_item,layercolumn,check_button)
                                 layercolumn = layercolumn + 1
@@ -106,7 +129,7 @@ class renderSubmit(base_class, generated_class):
                     uniqueshot_button = QtWidgets.QLabel(parent=self.shotTree)
                     self.shotTree.setItemWidget(uniqueshot_item,0,uniqueshot_button)
                     uniquecolumn = 1
-                    for ls in range(len(self.layers)):
+                    for ls in range(len(self.layers[self.dcc_combo.currentText()])):
                         uniquecheck_button = QtWidgets.QCheckBox(parent=self.shotTree)
                         self.shotTree.setItemWidget(uniqueshot_item,uniquecolumn,uniquecheck_button)
                         uniquecolumn = uniquecolumn + 1
@@ -130,10 +153,10 @@ class renderSubmit(base_class, generated_class):
             for child_index in range(child_count):
                 shot_name = key_item.child(child_index).text(0)
                 layers_to_render = []        
-                for j in range(len(self.layers)):
+                for j in range(len(self.layers[self.dcc_combo.currentText()])):
                     checkbox = self.shotTree.itemWidget(key_item.child(child_index), j+1)
                     if checkbox and checkbox.isChecked():
-                        layer = self.layers[j]
+                        layer = self.layers[self.dcc_combo.currentText()][j]
                         layers_to_render.append(layer)
                 if layers_to_render:
                     render_dict[shot_name] = layers_to_render
@@ -168,7 +191,7 @@ class renderSubmit(base_class, generated_class):
             key_shots = root.child(shot_count)
             child_count = key_shots.childCount()
             for child_index in range(child_count):
-                for j in range(len(self.layers)):
+                for j in range(len(self.layers[self.dcc_combo.currentText()])):
                     checkbox = self.shotTree.itemWidget(key_shots.child(child_index),j+1)
                     checkbox.setChecked(True)
                 
@@ -179,7 +202,7 @@ class renderSubmit(base_class, generated_class):
             key_shots = root.child(shot_count)
             child_count = key_shots.childCount()
             for child_index in range(child_count):
-                for j in range(len(self.layers)):
+                for j in range(len(self.layers[self.dcc_combo.currentText()])):
                     checkbox = self.shotTree.itemWidget(key_shots.child(child_index),j+1)
                     checkbox.setChecked(False)
 
@@ -195,7 +218,7 @@ class renderSubmit(base_class, generated_class):
             child_count = key_shots.childCount()
             for child_index in range(child_count):
                 shotname = key_shots.child(child_index).text(0)
-                for j in range(len(self.layers)):
+                for j in range(len(self.layers[self.dcc_combo.currentText()])):
                     checkbox = self.shotTree.itemWidget(key_shots.child(child_index),j+1)
                     checkbox.setChecked(False)
                     if shotname in keyshot:
@@ -213,7 +236,7 @@ class renderSubmit(base_class, generated_class):
             child_count = key_shots.childCount()
             for child_index in range(child_count):
                 shotname = key_shots.child(child_index).text(0)
-                for j in range(len(self.layers)):
+                for j in range(len(self.layers[self.dcc_combo.currentText()])):
                     checkbox = self.shotTree.itemWidget(key_shots.child(child_index),j+1)
                     checkbox.setChecked(False)
                     if shotname in keyshot:
@@ -263,7 +286,7 @@ class renderSubmit(base_class, generated_class):
     def enableshot(self,selmodel):
         root = self.shotTree.invisibleRootItem()
         for selected_shots in selmodel:
-            for j in range(len(self.layers)):
+            for j in range(len(self.layers[self.dcc_combo.currentText()])):
                 checkbox = self.shotTree.itemWidget(selected_shots,j+1)
                 if hasattr(checkbox,'setChecked'):
                     checkbox.setChecked(True)
@@ -279,7 +302,7 @@ class renderSubmit(base_class, generated_class):
                 key_shots.setSelected(False)
             child_count = key_shots.childCount()
             for child_index in range(child_count):
-                for j in range(len(self.layers)):
+                for j in range(len(self.layers[self.dcc_combo.currentText()])):
                     cell = key_shots.child(child_index)
                     if hasattr(cell,'setSelected'):
                         cell.setSelected(False)
@@ -304,6 +327,7 @@ class renderSubmit(base_class, generated_class):
         self.menu.popup(QtGui.QCursor.pos())
 
 
+
     def connect_buttons(self):
         self.shotTree.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.shotTree.customContextMenuRequested.connect(self.onTreeContextMenuRequested)
@@ -316,6 +340,7 @@ class renderSubmit(base_class, generated_class):
         self.step_check.clicked.connect(self.stepspin)
         self.clearsel_push.clicked.connect(self.clearselected)
         self.enableunique_push.clicked.connect(self.enableUniques)
+        self.dcc_combo.currentIndexChanged.connect(self.createkeyshots)
         
     def pullKeyComp(self,selmodel):
         root = self.shotTree.invisibleRootItem()

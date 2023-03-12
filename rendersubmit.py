@@ -1,6 +1,7 @@
 import json
 import subprocess
 from datetime import datetime
+
 class rendersubmit():
     def __init__(self):
         self.dictread()
@@ -63,7 +64,6 @@ class rendersubmit():
                 frameend = self.seqsdict[katargs["seq"]][shots]['end']
                 
                 for layer in shotdict[shots]:
-                    print(layer)
                     fmlframes = []
                     middleframe = int((((int(frameend)) - (int(framestart)))/2)+1000)
                     fmlframes.append(framestart)
@@ -77,20 +77,14 @@ class rendersubmit():
 
                     # ---- writing jobs file
                     self.joboptions(katargs)
-                    
                     jobname = f'Name={katargs["seq"]}-{shots} - {layer}'
                     self.jobargs.append(jobname)
-                    
                     frames = f'Frames={frames_dict[katargs["framesdict"]]}'
-                    print(frames)
                     self.jobargs.append(frames)
-                    
                     outputpathrgba = f'OutputDirectory0=P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/latest/rgba'
                     self.jobargs.append(outputpathrgba)
-                    
                     outputfilergba = f'OutputFilename0={layer}_rgba.####.linear.exr'
                     self.jobargs.append(outputfilergba)
-
                     batchname = f'BatchName={batchnameid}'
                     self.jobargs.append(batchname)
                     self.writejobs()
@@ -104,6 +98,11 @@ class rendersubmit():
                     seqvar = f'varSeq=seq={katargs["seq"]}'
                     self.plugargs.append(seqvar)
                     self.writeplugs()
-
+                    
+                    rendercommand = {
+                        'Katana': f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/plugins.txt" "P:/AndreJukebox/seq/{katargs["seq"]}/s0000/lighting/shot.katana"',
+                        'Nuke': f'nuke.execute({layer}, {framestart}, {frameend})'
+                     }
+                    print(rendercommand[katargs['userdcc']])
                     command = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/plugins.txt" "P:/AndreJukebox/seq/{katargs["seq"]}/s0000/lighting/shot.katana"'
                     subprocess.call(command, shell=True)
