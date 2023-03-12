@@ -41,6 +41,8 @@ class renderSubmit(base_class, generated_class):
         #Rellenamos los combo box de episodios y secuencias
         self.populateCombo()
 
+        self.publishtexts()
+
         # Setteamos los callcacks a los items
         
         delegate = AlignDelegate(self.shotTree)
@@ -75,18 +77,21 @@ class renderSubmit(base_class, generated_class):
         self.shotTree.setHeaderLabels(header)
         self.shotTree.setColumnCount(2)
         
+    def publishtexts(self):
+        publishtext = {
+            "Katana":"Publish Shot",
+            "Nuke":"Publish Comps"
+        }
+        self.publish_push.setText(publishtext[self.dcc_combo.currentText()])
+
     def createkeyshots(self):
         self.currentseq = str(self.sequence_comboBox.currentText())
         icon = {
             'Nuke': QtGui.QPixmap("P:/AndreJukebox/pipe/ajbackend/rendersubmit/resources/nuke_icon.png"),
             'Katana': QtGui.QPixmap("P:/AndreJukebox/pipe/ajbackend/rendersubmit/resources/katana_icon.png")
             }
+        self.publishtexts()
         self.dcc_image.setPixmap(icon[self.dcc_combo.currentText()])
-
-        # QtWidgets.QLabel.setPicture()
-        
-        
-
 
         if self.dcc_combo.currentText() == "Nuke":
             self.shotTree.setColumnCount(2)
@@ -364,7 +369,9 @@ class renderSubmit(base_class, generated_class):
                 nocomp.setWindowTitle('Nuke comp check')
                 nocomp.show()
 
-            
+        submit_done = QtWidgets.QMessageBox(parent=self.shotTree,text='Comps has been pulled from parent')
+        submit_done.setWindowTitle('Comp check')
+        submit_done.show()    
             # if hasattr(key_shot,'child'):
             #     shot_child = key_shot.child(parent.row())
             #     checkbox = self.shotTree.itemWidget(shot_child,parent.column())
