@@ -4,12 +4,12 @@ import os
 from rendersubmit import rendersubmit
 import customread
 import gsv
-# from DeadlineNukeClient import DeadlineCon as Connect
-# con = Connect('WebServiceName', 8081)
-# con.Groups.GetGroupNames()
+
+
+# import dead
 
 def openscript(seq,key):
-    file = f'P:/AndreJukebox_output/comp/concept_animatic/{seq}/{key}/workfile.nk'
+    file = f'P:/AndreJukebox/seq/{seq}/{key}/comp/workfile.nk'
     nuke.scriptOpen(file) #('P:/AndreJukebox_output/comp/concept_animatic/020_MFG/s0260/workfile.nk') load the key script
 
 def updategsv(seq,shot):
@@ -27,10 +27,22 @@ def updategsv(seq,shot):
             continue
 
 def savescript(seq,shot):
-    savefile = f'P:/AndreJukebox_output/comp/concept_animatic/{seq}/{shot}/workfile.nk'
+    savefile = f'P:/AndreJukebox/seq/{seq}/{shot}/comp/workfile.nk'
     nuke.scriptSave(savefile) #('P:/AndreJukebox_output/comp/concept_animatic/020_MFG/s0270/workfile.nk') #save the child key
 
 
 openscript(seq=sys.argv[1],key=sys.argv[3])
 updategsv(seq=sys.argv[1],shot=sys.argv[2])
 savescript(seq=sys.argv[1],shot=sys.argv[2])
+
+# from Deadline import Groups
+# from Deadline import DeadlineConnect
+
+# from Deadline import DeadlineConnect as Connect
+# con = Connect.DeadlineCon('localhost', 8081)
+# print(con.Groups.GetGroupNames())
+
+# connectionobjet = DeadlineConnect.DeadlineCon
+
+# groups = Groups.Groups().GetGroupNames()
+# print(groups)
