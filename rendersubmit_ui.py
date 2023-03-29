@@ -6,7 +6,7 @@ from functools import partial
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 import rendersubmit
 
-nukerun = '"C:/Program Files/Nuke13.2v5/Nuke13.2.exe"'
+nukerun = '"P:/AndreJukebox/pipe/ajnuke/aj_nuke_14.bat"'
 script = '"P:/AndreJukebox/pipe/ajbackend/rendersubmit/nukepublish.py"'
 
 # Esto carga el archivo .ui
@@ -41,8 +41,9 @@ class renderSubmit(base_class, generated_class):
         #Rellenamos los combo box de episodios y secuencias
         self.populateCombo()
 
-        # Setteamos los callcacks a los items
-        
+        # text for publish buttons according the userdcc data
+        self.publishtexts()
+
         delegate = AlignDelegate(self.shotTree)
         self.shotTree.setItemDelegate(delegate)
         self.shotTree.setAlternatingRowColors(True)
@@ -75,18 +76,22 @@ class renderSubmit(base_class, generated_class):
         self.shotTree.setHeaderLabels(header)
         self.shotTree.setColumnCount(2)
         
+    def publishtexts(self):
+        publishtext = {
+            "Katana":"PUBLISH SHOT(s)",
+            "Nuke":"PUBLISH COMP(s)"
+        }
+        self.publish_push.setText(publishtext[self.dcc_combo.currentText()])
+
     def createkeyshots(self):
+        headers = {}
         self.currentseq = str(self.sequence_comboBox.currentText())
         icon = {
             'Nuke': QtGui.QPixmap("P:/AndreJukebox/pipe/ajbackend/rendersubmit/resources/nuke_icon.png"),
             'Katana': QtGui.QPixmap("P:/AndreJukebox/pipe/ajbackend/rendersubmit/resources/katana_icon.png")
             }
+        self.publishtexts()
         self.dcc_image.setPixmap(icon[self.dcc_combo.currentText()])
-
-        # QtWidgets.QLabel.setPicture()
-        
-        
-
 
         if self.dcc_combo.currentText() == "Nuke":
             self.shotTree.setColumnCount(2)
@@ -97,7 +102,7 @@ class renderSubmit(base_class, generated_class):
             unique_shots = []
             for layer in self.layers[self.dcc_combo.currentText()]:
                 headers.append(layer)
-                self.shotTree.setHeaderLabels(headers)
+            self.shotTree.setHeaderLabels(headers)
 
             for items in self.seqsdict[self.currentseq]:
                 if self.seqsdict[self.currentseq][items]['type'] == 'key':
@@ -249,7 +254,6 @@ class renderSubmit(base_class, generated_class):
         else:
             if self.expressionbtn:
                 self.expressionbtn.setVisible(0)
-                self.frames_layout.removeWidget(self.expressionbtn)
 
     def stepspin(self):
         if self.step_check.isChecked():
@@ -346,7 +350,7 @@ class renderSubmit(base_class, generated_class):
         root = self.shotTree.invisibleRootItem()
         for parent in selmodel:
             key_shot = root.child(parent.parent().row())
-            nukefile = f'P:/AndreJukebox_output/comp/concept_animatic/{self.currentseq}/{key_shot.text(0)}/workfile.nk'
+            nukefile = f'P:/AndreJukebox/seq/{self.currentseq}/{key_shot.text(0)}/comp/workfile.nk'
             if os.path.isfile(nukefile):
                 print('keys=',key_shot.text(0))
                 child_count = key_shot.childCount()
@@ -364,7 +368,10 @@ class renderSubmit(base_class, generated_class):
                 nocomp.setWindowTitle('Nuke comp check')
                 nocomp.show()
 
-            
+        pullcomp_done = QtWidgets.QMessageBox(parent=self.shotTree,text='Comps has been pulled from parent')
+        pullcomp_done.setWindowTitle('Comp check')
+        pullcomp_done.show()
+        print('[[[PULL DONE]]]')
             # if hasattr(key_shot,'child'):
             #     shot_child = key_shot.child(parent.row())
             #     checkbox = self.shotTree.itemWidget(shot_child,parent.column())

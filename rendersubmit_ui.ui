@@ -27,7 +27,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="header_layout" stretch="0,0,1,0,0">
+         <layout class="QHBoxLayout" name="header_layout" stretch="0,0,1,0,0,0">
           <item>
            <widget class="QLabel" name="label_4">
             <property name="sizePolicy">
@@ -96,6 +96,19 @@
            </widget>
           </item>
           <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>50</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
            <widget class="QLabel" name="dcc_image">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -133,7 +146,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>40</width>
+              <width>20</width>
               <height>20</height>
              </size>
             </property>
