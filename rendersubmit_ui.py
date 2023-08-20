@@ -4,6 +4,8 @@ import sys
 import json
 from functools import partial
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtGui import QIcon
 import rendersubmit
 
 nukerun = '"P:/AndreJukebox/pipe/ajnuke/aj_nuke_14.bat"'
@@ -22,6 +24,7 @@ class AlignDelegate(QtWidgets.QStyledItemDelegate):
 # Definimos nuestra clase, en este caso un widget
 class renderSubmit(base_class, generated_class):
     def __init__(self, *args, **kwargs):
+        super().__init__()
         # Llamamos al constructor del padre
         super(renderSubmit, self).__init__(*args, **kwargs)
 
@@ -34,7 +37,7 @@ class renderSubmit(base_class, generated_class):
 
         # Ponemos un titulo a la ventana
         self.setWindowTitle("AJ Render Submiter v0.0.1")
-        
+        self.setWindowIcon(QIcon("P:/AndreJukebox_dev/Logo/aj.ico"))
         #Leemos el dict bakeado con la data de las secuencias/shots
         self.dictread()
 
