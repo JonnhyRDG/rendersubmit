@@ -1,5 +1,8 @@
 import json
 import subprocess
+import glob
+import os
+import re
 from datetime import datetime
 
 class rendersubmit():
@@ -36,7 +39,8 @@ class rendersubmit():
 
     def writejobs(self):
         with open('jobs.txt','w') as output:
-            output.write('\n'.join(self.jobargs))
+            for self.jobs in self.jobargs:
+                output.write(self.jobs + '\n')
 
     # plugin file
     def pluginoptions(self,layer):
@@ -46,7 +50,8 @@ class rendersubmit():
 
     def writeplugs(self):
         with open('plugins.txt','w') as output:
-            output.write('\n'.join(self.plugargs))
+            for self.args in self.plugargs:
+                output.write(self.args + '\n')
 
     # cmds file
     def cmdsoptions(self):
@@ -54,7 +59,7 @@ class rendersubmit():
 
     def writecmds(self):
         with open('commands.txt','w') as output:
-            output.write('\n'.join(self.cmdsargs))            
+            output.write('/n'.join(self.cmdsargs))            
 
     def submit(self,katargs):
         for shotdict in katargs['shotsdict']:
@@ -64,6 +69,23 @@ class rendersubmit():
                 frameend = self.seqsdict[katargs["seq"]][shots]['end']
                 
                 for layer in shotdict[shots]:
+                    # getting the version #
+                    self.path = f'P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/*'
+                    self.verfolder = glob.glob(self.path)
+                    self.verlist = []
+                    for self.ver in self.verfolder:
+                        self.verpath = os.path.abspath(self.ver)
+                        self.verfolder = self.verpath.rsplit('\\',1)[1]
+                        if re.match('\d{4}',self.verfolder):
+                            self.verlist.append(self.verfolder)
+                    if not self.verlist:
+                        self.verlist.append('0001')
+                        self.lastver = '0001'
+                    else:
+                        self.lastver = str(f'{int(self.verlist[-1]) + 1:04d}')
+                    
+                    createdir = f'P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/{self.lastver}'
+                    os.makedirs(createdir)
                     fmlframes = []
                     middleframe = int((((int(frameend)) - (int(framestart)))/2)+1000)
                     fmlframes.append(framestart)
@@ -81,12 +103,14 @@ class rendersubmit():
                     self.jobargs.append(jobname)
                     frames = f'Frames={frames_dict[katargs["framesdict"]]}'
                     self.jobargs.append(frames)
-                    outputpathrgba = f'OutputDirectory0=P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/latest/rgba'
+                    outputpathrgba = f'OutputDirectory0=P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/{self.lastver}/rgba'
                     self.jobargs.append(outputpathrgba)
                     outputfilergba = f'OutputFilename0={layer}_rgba.####.linear.exr'
                     self.jobargs.append(outputfilergba)
                     batchname = f'BatchName={batchnameid}'
                     self.jobargs.append(batchname)
+                    katver = f'EnvironmentKeyValue0=katver={self.lastver}'
+                    self.jobargs.append(katver)                    
                     self.writejobs()
 
                     # ---- writing plugin file

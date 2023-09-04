@@ -37,7 +37,7 @@ class renderSubmit(base_class, generated_class):
 
         # Ponemos un titulo a la ventana
         self.setWindowTitle("AJ Render Submiter v0.0.1")
-        self.setWindowIcon(QIcon("P:/AndreJukebox_dev/Logo/aj.ico"))
+        self.setWindowIcon(QIcon("P:/AndreJukebox/lib/logo/aj.ico"))
         #Leemos el dict bakeado con la data de las secuencias/shots
         self.dictread()
 
@@ -405,7 +405,8 @@ def main():
 
     # Creamos nuestro widget y lo mostramos.
     widget = renderSubmit()
-    widget.show()   # Para mostrarlo con el tamñano definido en el ui
+    widget.show()   
+    # Para mostrarlo con el tamñano definido en el ui
     # widget.showMaximized()  # Para mostrarlo con la pantalla maximizada
     # widget.showFullScreen()  # Para mostrarlo en fullscreen
 
@@ -413,5 +414,4 @@ def main():
     app.exec_()
 
 if __name__ == '__main__':
-    # registerPanel()
     main()
