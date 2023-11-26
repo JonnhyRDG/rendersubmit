@@ -4,14 +4,11 @@ import glob
 import os
 import re
 from datetime import datetime
+import project_dict
 
 class rendersubmit():
     def __init__(self):
-        self.dictread()
-
-    def dictread(self):
-        self.seqsdictjson = open('P:/AndreJukebox/aj_seq_dict.json')
-        self.seqsdict = json.load(self.seqsdictjson)
+        project_dict.dictread(self)
 
     # jobs file
     def joboptions(self,katargs):
@@ -110,7 +107,9 @@ class rendersubmit():
                     batchname = f'BatchName={batchnameid}'
                     self.jobargs.append(batchname)
                     katver = f'EnvironmentKeyValue0=katver={self.lastver}'
-                    self.jobargs.append(katver)                    
+                    self.jobargs.append(katver)
+                    # self.postscript = f'PreJobScript=p:/AndreJukebox/pipe/ajbackend/rendersubmit/rendersubmit_ui.py'
+                    # self.jobargs.append(self.postscript)
                     self.writejobs()
 
                     # ---- writing plugin file

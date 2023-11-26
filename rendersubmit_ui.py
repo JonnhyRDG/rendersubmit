@@ -7,6 +7,7 @@ from PyQt5 import QtWidgets, uic, QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtGui import QIcon
 import rendersubmit
+import project_dict
 
 nukerun = '"P:/AndreJukebox/pipe/ajnuke/aj_nuke_14.bat"'
 script = '"P:/AndreJukebox/pipe/ajbackend/rendersubmit/nukepublish.py"'
@@ -39,7 +40,7 @@ class renderSubmit(base_class, generated_class):
         self.setWindowTitle("AJ Render Submiter v0.0.1")
         self.setWindowIcon(QIcon("P:/AndreJukebox/lib/logo/aj.ico"))
         #Leemos el dict bakeado con la data de las secuencias/shots
-        self.dictread()
+        project_dict.dictread(self)
 
         #Rellenamos los combo box de episodios y secuencias
         self.populateCombo()
@@ -57,10 +58,6 @@ class renderSubmit(base_class, generated_class):
             'Nuke':['write_out']
             }
         self.expressionbtn.setVisible(0)
-
-    def dictread(self):
-        self.seqsdictjson = open('P:/AndreJukebox/aj_seq_dict.json')
-        self.seqsdict = json.load(self.seqsdictjson)
     
     def seqlists(self):
         self.seqcombolist = ['']
