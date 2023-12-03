@@ -41,7 +41,10 @@ class renderSubmit(base_class, generated_class):
         self.setWindowIcon(QIcon("P:/AndreJukebox/lib/logo/aj.ico"))
         #Leemos el dict bakeado con la data de las secuencias/shots
         project_dict.dictread(self)
-
+        
+        # Create the dictionary for layering harvest functions
+        self.functiondict()
+        
         #Rellenamos los combo box de episodios y secuencias
         self.populateCombo()
 
@@ -53,11 +56,28 @@ class renderSubmit(base_class, generated_class):
         self.shotTree.setAlternatingRowColors(True)
         self.connect_buttons()
         self.currentseq = str(self.sequence_comboBox.currentText())
-        self.layers = {
-            'Katana':['env_all','env_bg','char_all','char_andre','fx_smoke','char_cigar','env_skyscraper'],
-            'Nuke':['write_out']
-            }
+        self.layers = {'Katana':[''],'Nuke':['']}
         self.expressionbtn.setVisible(0)
+
+    def functiondict(self):
+        self.appdict = {"Katana": self.katanalayers, "Nuke": self.nukelayers}
+
+    def layerfunc(self,func):
+        func()
+    
+    def katanalayers(self):
+        self.layerlist = []
+        self.currentseq = str(self.sequence_comboBox.currentText())
+        for self.shots in self.seqsdict[self.currentseq]:
+            self.shotslayer = self.seqsdict[self.currentseq][self.shots]["layers"]
+            self.singlelayers = self.shotslayer.split(",")
+            for self.ly in self.singlelayers:
+                if not self.ly in self.layerlist:
+                    self.layerlist.append(self.ly)
+        self.layers['Katana'] = self.layerlist
+
+    def nukelayers(self):
+        self.layers['Nuke'] = ['write_output']
     
     def seqlists(self):
         self.seqcombolist = ['']
@@ -83,7 +103,11 @@ class renderSubmit(base_class, generated_class):
         }
         self.publish_push.setText(publishtext[self.dcc_combo.currentText()])
 
+    def applayerdict(self):
+        self.layerdict = {'Katana':[''],'Nuke':['']}
+
     def createkeyshots(self):
+        self.shotTree.clear()
         headers = {}
         self.currentseq = str(self.sequence_comboBox.currentText())
         icon = {
@@ -95,14 +119,19 @@ class renderSubmit(base_class, generated_class):
 
         if self.dcc_combo.currentText() == "Nuke":
             self.shotTree.setColumnCount(2)
+        
+        # for anything that needs to be created when changing the seq/app know, put it under the next IF statement.
         if not self.currentseq == '':
-            self.shotTree.clear()
+            self.layerfunc(self.appdict[self.dcc_combo.currentText()])
             self.shotTree.setHeaderHidden(False)
             headers = ['Shots']
             unique_shots = []
+
+            # This is where the headers for the layers are created.
             for layer in self.layers[self.dcc_combo.currentText()]:
                 headers.append(layer)
             self.shotTree.setHeaderLabels(headers)
+
 
             for items in self.seqsdict[self.currentseq]:
                 if self.seqsdict[self.currentseq][items]['type'] == 'key':
@@ -116,10 +145,16 @@ class renderSubmit(base_class, generated_class):
                             shot_item = QtWidgets.QTreeWidgetItem(ml_item, [childshots])
                             shot_button = QtWidgets.QLabel(parent=self.shotTree)
                             self.shotTree.setItemWidget(shot_item,0,shot_button)
+
+
+                            # this is where we create the checkboxes
                             for ls in range(len(self.layers[self.dcc_combo.currentText()])):
-                                check_button = QtWidgets.QCheckBox(parent=self.shotTree)
-                                self.shotTree.setItemWidget(shot_item,layercolumn,check_button)
-                                layercolumn = layercolumn + 1
+                                current_layer = self.shotTree.headerItem().text(layercolumn)
+                                shot_layer = self.seqsdict[self.currentseq][childshots]["layers"]
+                                if current_layer in shot_layer:
+                                    check_button = QtWidgets.QCheckBox(parent=self.shotTree)
+                                    self.shotTree.setItemWidget(shot_item,layercolumn,check_button)
+                                    layercolumn = layercolumn + 1
 
                 if self.seqsdict[self.currentseq][items]['type'] == 'unique':
                     unique_shots.append(items)
@@ -134,10 +169,16 @@ class renderSubmit(base_class, generated_class):
                     uniqueshot_button = QtWidgets.QLabel(parent=self.shotTree)
                     self.shotTree.setItemWidget(uniqueshot_item,0,uniqueshot_button)
                     uniquecolumn = 1
+
+                    # this is where we create the checkboxes
                     for ls in range(len(self.layers[self.dcc_combo.currentText()])):
-                        uniquecheck_button = QtWidgets.QCheckBox(parent=self.shotTree)
-                        self.shotTree.setItemWidget(uniqueshot_item,uniquecolumn,uniquecheck_button)
-                        uniquecolumn = uniquecolumn + 1
+                                un_current_layer = self.shotTree.headerItem().text(uniquecolumn)
+                                unique_layer = self.seqsdict[self.currentseq][un_shots]["layers"]
+
+                                if un_current_layer in unique_layer:                        
+                                    uniquecheck_button = QtWidgets.QCheckBox(parent=self.shotTree)
+                                    self.shotTree.setItemWidget(uniqueshot_item,uniquecolumn,uniquecheck_button)
+                                    uniquecolumn = uniquecolumn + 1
         else:
             self.shotTree.clear()
             self.shotTree.setHeaderHidden(True)
@@ -198,7 +239,8 @@ class renderSubmit(base_class, generated_class):
             for child_index in range(child_count):
                 for j in range(len(self.layers[self.dcc_combo.currentText()])):
                     checkbox = self.shotTree.itemWidget(key_shots.child(child_index),j+1)
-                    checkbox.setChecked(True)
+                    if hasattr(checkbox, 'setChecked'):
+                        checkbox.setChecked(True)
                 
     def disableAll(self):
         root = self.shotTree.invisibleRootItem()
@@ -209,7 +251,8 @@ class renderSubmit(base_class, generated_class):
             for child_index in range(child_count):
                 for j in range(len(self.layers[self.dcc_combo.currentText()])):
                     checkbox = self.shotTree.itemWidget(key_shots.child(child_index),j+1)
-                    checkbox.setChecked(False)
+                    if hasattr(checkbox, 'setChecked'):
+                        checkbox.setChecked(False)
 
     def enableKeys(self):
         root = self.shotTree.invisibleRootItem()
@@ -225,9 +268,14 @@ class renderSubmit(base_class, generated_class):
                 shotname = key_shots.child(child_index).text(0)
                 for j in range(len(self.layers[self.dcc_combo.currentText()])):
                     checkbox = self.shotTree.itemWidget(key_shots.child(child_index),j+1)
-                    checkbox.setChecked(False)
+                    if hasattr(checkbox, 'setChecked'):
+                        checkbox.setChecked(False)
                     if shotname in keyshot:
-                        checkbox.setChecked(True)
+                        if hasattr(checkbox, 'setChecked'):
+                            checkbox.setChecked(True)
+                    else:
+                        continue
+
 
     def enableUniques(self):
         root = self.shotTree.invisibleRootItem()
@@ -243,9 +291,11 @@ class renderSubmit(base_class, generated_class):
                 shotname = key_shots.child(child_index).text(0)
                 for j in range(len(self.layers[self.dcc_combo.currentText()])):
                     checkbox = self.shotTree.itemWidget(key_shots.child(child_index),j+1)
-                    checkbox.setChecked(False)
+                    if hasattr(checkbox, 'setChecked'):
+                        checkbox.setChecked(False)
                     if shotname in keyshot:
-                        checkbox.setChecked(True)
+                        if hasattr(checkbox, 'setChecked'):
+                            checkbox.setChecked(True)
 
     def framesui(self):
         self.expressionbtn.setVisible(0)
