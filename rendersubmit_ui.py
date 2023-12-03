@@ -183,6 +183,11 @@ class renderSubmit(base_class, generated_class):
         else:
             self.stepson = 0
 
+        if self.versio_up_checkbox.isChecked():
+            self.versionup = 1
+        else:
+            self.versionup = 0
+
         argdict = {}
         render_dict = {}
         root = self.shotTree.invisibleRootItem()
@@ -213,6 +218,7 @@ class renderSubmit(base_class, generated_class):
         argdict['userchunk']=str(self.tasksize_line.text())
         argdict['userpriority']=str(self.prio_line.text())
         argdict['pool']=str(self.group_combo.currentText())
+        argdict['version']=self.versionup
         
         if not self.currentseq == '':
             rendersubmit.rendersubmit().submit(katargs=argdict)
