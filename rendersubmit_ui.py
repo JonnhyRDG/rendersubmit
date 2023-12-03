@@ -106,6 +106,32 @@ class renderSubmit(base_class, generated_class):
     def applayerdict(self):
         self.layerdict = {'Katana':[''],'Nuke':['']}
 
+    def checkbox_create(self,clm):
+        self.check_button = QtWidgets.QCheckBox(parent=self.shotTree)
+        self.shotTree.setItemWidget(self.shot_item,clm,self.check_button)
+
+
+    def filtered_list(self,list1,list2):
+        return list(set(list1) & set(list2))
+
+    def hierarchy_create(self,items,headers,childlist):
+        self.ml_item = QtWidgets.QTreeWidgetItem(self.shotTree, self.hierarchy[self.seqsdict[self.currentseq][items]['type']])
+        # ml_button = QtWidgets.QLabel(parent=self.shotTree)
+        # # self.shotTree.setItemWidget(self.ml_item,0,ml_button)
+        
+        self.ml_item.setExpanded(True)
+        
+        for childshots in childlist:
+            self.shot_item = QtWidgets.QTreeWidgetItem(self.ml_item, [childshots])
+
+            shot_layer = self.seqsdict[self.currentseq][childshots]["layers"]
+
+            #dictionary with different type of lists according to the app.
+            list_app = {"Katana":(self.filtered_list(shot_layer.split(","),self.layers[self.dcc_combo.currentText()])),"Nuke": self.layers[self.dcc_combo.currentText()]}
+            for i in list_app[self.dcc_combo.currentText()]:
+                self.layer_index = headers.index(i)
+                self.checkbox_create(clm=self.layer_index)
+
     def createkeyshots(self):
         self.shotTree.clear()
         headers = {}
@@ -119,9 +145,10 @@ class renderSubmit(base_class, generated_class):
 
         if self.dcc_combo.currentText() == "Nuke":
             self.shotTree.setColumnCount(2)
-        
+
         # for anything that needs to be created when changing the seq/app know, put it under the next IF statement.
         if not self.currentseq == '':
+
             self.layerfunc(self.appdict[self.dcc_combo.currentText()])
             self.shotTree.setHeaderHidden(False)
             headers = ['Shots']
@@ -132,53 +159,20 @@ class renderSubmit(base_class, generated_class):
                 headers.append(layer)
             self.shotTree.setHeaderLabels(headers)
 
-
             for items in self.seqsdict[self.currentseq]:
+                self.hierarchy = {"key":[items], "child":[items],"unique":["Unique"]}
+                childlist = []
                 if self.seqsdict[self.currentseq][items]['type'] == 'key':
-                        ml_item = QtWidgets.QTreeWidgetItem(self.shotTree, [items])
-                        ml_button = QtWidgets.QLabel(parent=self.shotTree)
-                        self.shotTree.setItemWidget(ml_item,0,ml_button)
-                        ml_item.setExpanded(True)
-                        childlist = self.seqsdict[self.currentseq][items]['childs'].rsplit(",")
-                        for childshots in childlist:
-                            layercolumn = 1
-                            shot_item = QtWidgets.QTreeWidgetItem(ml_item, [childshots])
-                            shot_button = QtWidgets.QLabel(parent=self.shotTree)
-                            self.shotTree.setItemWidget(shot_item,0,shot_button)
+                    for splits in (self.seqsdict[self.currentseq][items]['childs'].rsplit(",")):
+                        childlist.append(splits)
+                    self.hierarchy_create(items,headers,childlist)
 
-
-                            # this is where we create the checkboxes
-                            for ls in range(len(self.layers[self.dcc_combo.currentText()])):
-                                current_layer = self.shotTree.headerItem().text(layercolumn)
-                                shot_layer = self.seqsdict[self.currentseq][childshots]["layers"]
-                                if current_layer in shot_layer:
-                                    check_button = QtWidgets.QCheckBox(parent=self.shotTree)
-                                    self.shotTree.setItemWidget(shot_item,layercolumn,check_button)
-                                    layercolumn = layercolumn + 1
-
-                if self.seqsdict[self.currentseq][items]['type'] == 'unique':
+                elif self.seqsdict[self.currentseq][items]['type'] == 'unique':
                     unique_shots.append(items)
-            
+
             if unique_shots:
-                unique_hierarchy = QtWidgets.QTreeWidgetItem(self.shotTree, ['uniques'])
-                unique_item = QtWidgets.QLabel(self.shotTree)
-                self.shotTree.setItemWidget(unique_hierarchy,0,unique_item)
-                unique_hierarchy.setExpanded(True)
-                for un_shots in unique_shots:
-                    uniqueshot_item = QtWidgets.QTreeWidgetItem(unique_hierarchy, [un_shots])
-                    uniqueshot_button = QtWidgets.QLabel(parent=self.shotTree)
-                    self.shotTree.setItemWidget(uniqueshot_item,0,uniqueshot_button)
-                    uniquecolumn = 1
+                self.hierarchy_create(items,headers,unique_shots)
 
-                    # this is where we create the checkboxes
-                    for ls in range(len(self.layers[self.dcc_combo.currentText()])):
-                                un_current_layer = self.shotTree.headerItem().text(uniquecolumn)
-                                unique_layer = self.seqsdict[self.currentseq][un_shots]["layers"]
-
-                                if un_current_layer in unique_layer:                        
-                                    uniquecheck_button = QtWidgets.QCheckBox(parent=self.shotTree)
-                                    self.shotTree.setItemWidget(uniqueshot_item,uniquecolumn,uniquecheck_button)
-                                    uniquecolumn = uniquecolumn + 1
         else:
             self.shotTree.clear()
             self.shotTree.setHeaderHidden(True)
@@ -422,29 +416,6 @@ class renderSubmit(base_class, generated_class):
         pullcomp_done.setWindowTitle('Comp check')
         pullcomp_done.show()
         print('[[[PULL DONE]]]')
-            # if hasattr(key_shot,'child'):
-            #     shot_child = key_shot.child(parent.row())
-            #     checkbox = self.shotTree.itemWidget(shot_child,parent.column())
-            #     if hasattr(checkbox, 'setChecked'):
-            #         checkbox.setChecked(True)
-            #     else:
-            #         continue    
-
-
-
-# def registerPanel():
-#     import nuke
-#     import nukescripts
-#     from nukescripts import panels
-
-#     ## make this work in a .py file and in 'copy and paste' into the script editor
-#     moduleName = __name__
-#     if __name__ == '__main__':
-#         moduleName = ''
-#     else:
-#         moduleName = moduleName + '.'
-
-#     panels.registerWidgetAsPanel( moduleName + 'renderSubmit', 'AJ Render Submiter v0.0.1', 'render.Submit')
 
 def main():
     # Creamos nuestra aplicacion
@@ -453,9 +424,6 @@ def main():
     # Creamos nuestro widget y lo mostramos.
     widget = renderSubmit()
     widget.show()   
-    # Para mostrarlo con el tamñano definido en el ui
-    # widget.showMaximized()  # Para mostrarlo con la pantalla maximizada
-    # widget.showFullScreen()  # Para mostrarlo en fullscreen
 
     # Ejecutamos la aplicacion
     app.exec_()
