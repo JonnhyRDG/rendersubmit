@@ -81,11 +81,12 @@ class rendersubmit():
                     else:
                         if katargs['version'] == 1:
                             self.lastver = str(f'{int(self.verlist[-1]) + 1:04d}')
-                            createdir = f'P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/{self.lastver}'
-                            os.makedirs(createdir)
+
                         else:
                             self.lastver = str(f'{int(self.verlist[-1]):04d}')
-                    
+                    createdir = f'P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/{self.lastver}'
+                    if not os.path.isdir(createdir):
+                        os.makedirs(createdir)                    
 
                     fmlframes = []
                     middleframe = int((((int(frameend)) - (int(framestart)))/2)+1000)
