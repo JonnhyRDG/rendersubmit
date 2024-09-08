@@ -96,7 +96,8 @@ class rendersubmit():
                     fmlstring = ",".join(str(frm) for frm in fmlframes)
                     frames_dict = {}
                     frames_dict['Expression']= katargs['frameexp'] if katargs["stepstate"] == 0 else f'{katargs["frameexp"]}x{katargs["step"]}'
-                    frames_dict['FML']= fmlstring 
+                    frames_dict['FML']= fmlstring
+                    frames_dict['Keyframe'] = self.seqsdict[katargs["seq"]][shots]['keyframe']
                     frames_dict['Shotinfo']= f'{framestart}-{frameend}' if katargs["stepstate"] == 0 else f'{framestart}-{frameend}x{katargs["step"]}'
 
                     # ---- writing jobs file
@@ -104,10 +105,12 @@ class rendersubmit():
                     jobname = f'Name={katargs["seq"]}-{shots} - {layer}'
                     self.jobargs.append(jobname)
                     frames = f'Frames={frames_dict[katargs["framesdict"]]}'
+                    print(katargs['framesdict'])
+                    print(frames)
                     self.jobargs.append(frames)
-                    outputpathrgba = f'OutputDirectory0=P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/{self.lastver}/rgba'
+                    outputpathrgba = f'OutputDirectory0=P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/{self.lastver}/beauty'
                     self.jobargs.append(outputpathrgba)
-                    outputfilergba = f'OutputFilename0={layer}_rgba.####.linear.exr'
+                    outputfilergba = f'OutputFilename0={layer}_beauty.####.linear.exr'
                     self.jobargs.append(outputfilergba)
                     batchname = f'BatchName={batchnameid}'
                     self.jobargs.append(batchname)

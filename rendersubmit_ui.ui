@@ -806,6 +806,11 @@
                </item>
                <item>
                 <property name="text">
+                 <string>Keyframe</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
                  <string>Expression</string>
                 </property>
                </item>
