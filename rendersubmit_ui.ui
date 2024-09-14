@@ -801,6 +801,11 @@
                </property>
                <item>
                 <property name="text">
+                 <string>autoprogstep</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
                  <string>Shotinfo</string>
                 </property>
                </item>
