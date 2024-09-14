@@ -88,6 +88,26 @@ class rendersubmit():
                     if not os.path.isdir(createdir):
                         os.makedirs(createdir)                    
 
+                    # create the variable for automated progressive steps
+                    seqframes = range(int(framestart),int(frameend),1)
+                    frame_len = (len(seqframes))
+                    prog_step = []
+                    while frame_len > 1:
+                        frame_len = frame_len / 2
+                        if frame_len > 1:
+                            prog_step.append(int(frame_len))
+
+                    frames_exp_list = []
+                    for x in prog_step:
+                        if x == 1:
+                            exp = f'{framestart}-{frameend}'
+                        else:
+                            exp = f'{framestart}-{frameend}x{x}'
+                        frames_exp_list.append(exp)
+                    sep = ','
+                    autoprogstep = (sep.join(frames_exp_list))
+                    print(autoprogstep)
+
                     fmlframes = []
                     middleframe = int((((int(frameend)) - (int(framestart)))/2)+1000)
                     fmlframes.append(framestart)
@@ -99,6 +119,8 @@ class rendersubmit():
                     frames_dict['FML']= fmlstring
                     frames_dict['Keyframe'] = self.seqsdict[katargs["seq"]][shots]['keyframe']
                     frames_dict['Shotinfo']= f'{framestart}-{frameend}' if katargs["stepstate"] == 0 else f'{framestart}-{frameend}x{katargs["step"]}'
+                    frames_dict['autoprogstep'] = autoprogstep
+
 
                     # ---- writing jobs file
                     self.joboptions(katargs)
