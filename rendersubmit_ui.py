@@ -52,7 +52,7 @@ class renderSubmit(base_class, generated_class):
         self.functiondict()
         
         #Rellenamos los combo box de episodios y secuencias
-        self.populateCombo()
+        # self.populateCombo()
 
         # text for publish buttons according the userdcc data
         self.publishtexts()
@@ -89,11 +89,16 @@ class renderSubmit(base_class, generated_class):
         self.seqcombolist = ['']
         for seqs in project_dict.proj_dict().seqsdict:
             self.seqcombolist.append(seqs)
+        print(self.seqcombolist)
+
+
 
     def populateCombo(self):
         self.seqlists()
+        self.sequence_comboBox.clear()
         self.sequence_comboBox.addItems(self.seqcombolist)
         episodes = ['concept_animatic']
+        self.episode_comboBox.clear()
         self.episode_comboBox.addItems(episodes)
 
     def nukeshots(self):
@@ -430,6 +435,7 @@ class renderSubmit(base_class, generated_class):
         print('[[[PULL DONE]]]')
 
     def reload_csv(self):
+        self.shotTree.clear()
         def getGoogleSeet(self,fileId, outDir, outFile):
   
             url = f'https://docs.google.com/spreadsheets/d/{fileId}/export?format=csv'
@@ -441,8 +447,6 @@ class renderSubmit(base_class, generated_class):
                     print('CSV file saved to: {}'.format(self.filepath))    
             else:
                 print(f'Error downloading Google Sheet: {self.response.status_code}')
-                # sys.exit(1)
-
 
         self.aj_seq_data_id = '1iH0H03bc48dr9Z6MQ5St-5dsiZZLiLvNPuZY_7LVb7o'
         self.aj_asset_data_id = '1_ijIUsmpBBhXnPV4l9ospjbaArNJQn_5Dvn1FRcC6r4'
@@ -450,20 +454,18 @@ class renderSubmit(base_class, generated_class):
         self.outDir = 'P:/AndreJukebox/'
         self.seqfile = 'aj_seq_data.csv'
         self.assetfile = 'aj_asset_data.csv'
-        
+
         getGoogleSeet(self,self.aj_seq_data_id,self.outDir, self.seqfile)
         getGoogleSeet(self,self.aj_asset_data_id,self.outDir, self.assetfile)
-        
+        # jasondict.json_exp().seqsdict = {}
+        jasondict.json_exp().seqsdict_export()
+        jasondict.json_exp().assetdict_export()
+        # project_dict.proj_dict().reload()
+        project_dict.proj_dict().dictread
 
-        jasondict.seqsdict_export()
-        jasondict.assetdict_export()
-        # self.shotTree.clear()
-        project_dict.proj_dict().reload()
-        # self.seqlists()
-        # self.createkeyshots()
-        # sys.exit(0)
+        self.populateCombo()
+        self.createkeyshots()
         
-
 
 
 def main():
