@@ -8,6 +8,8 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtGui import QIcon
 import rendersubmit
 import project_dict
+import requests
+import jasondict
 
 nukerun = '"P:/AndreJukebox/pipe/ajnuke/aj_nuke_14.bat"'
 script = '"P:/AndreJukebox/pipe/ajbackend/rendersubmit/nukepublish.py"'
@@ -39,8 +41,12 @@ class renderSubmit(base_class, generated_class):
         # Ponemos un titulo a la ventana
         self.setWindowTitle("AJ Render Submiter v0.0.1")
         self.setWindowIcon(QIcon("P:/AndreJukebox/lib/logo/aj.ico"))
+
+        # Nos bajamos el csv de googlesheets
+        self.reload_csv()
+
         #Leemos el dict bakeado con la data de las secuencias/shots
-        project_dict.dictread(self)
+        project_dict.proj_dict().dictread()
         
         # Create the dictionary for layering harvest functions
         self.functiondict()
@@ -68,8 +74,8 @@ class renderSubmit(base_class, generated_class):
     def katanalayers(self):
         self.layerlist = []
         self.currentseq = str(self.sequence_comboBox.currentText())
-        for self.shots in self.seqsdict[self.currentseq]:
-            self.shotslayer = self.seqsdict[self.currentseq][self.shots]["layers"]
+        for self.shots in project_dict.proj_dict().seqsdict[self.currentseq]:
+            self.shotslayer = project_dict.proj_dict().seqsdict[self.currentseq][self.shots]["layers"]
             self.singlelayers = self.shotslayer.split(",")
             for self.ly in self.singlelayers:
                 if not self.ly in self.layerlist:
@@ -81,7 +87,7 @@ class renderSubmit(base_class, generated_class):
     
     def seqlists(self):
         self.seqcombolist = ['']
-        for seqs in self.seqsdict:
+        for seqs in project_dict.proj_dict().seqsdict:
             self.seqcombolist.append(seqs)
 
     def populateCombo(self):
@@ -115,7 +121,7 @@ class renderSubmit(base_class, generated_class):
         return list(set(list1) & set(list2))
 
     def hierarchy_create(self,items,headers,childlist):
-        self.ml_item = QtWidgets.QTreeWidgetItem(self.shotTree, self.hierarchy[self.seqsdict[self.currentseq][items]['type']])
+        self.ml_item = QtWidgets.QTreeWidgetItem(self.shotTree, self.hierarchy[project_dict.proj_dict().seqsdict[self.currentseq][items]['type']])
         # ml_button = QtWidgets.QLabel(parent=self.shotTree)
         # # self.shotTree.setItemWidget(self.ml_item,0,ml_button)
         
@@ -124,7 +130,7 @@ class renderSubmit(base_class, generated_class):
         for childshots in childlist:
             self.shot_item = QtWidgets.QTreeWidgetItem(self.ml_item, [childshots])
 
-            shot_layer = self.seqsdict[self.currentseq][childshots]["layers"]
+            shot_layer = project_dict.proj_dict().seqsdict[self.currentseq][childshots]["layers"]
 
             #dictionary with different type of lists according to the app.
             list_app = {"Katana":(self.filtered_list(shot_layer.split(","),self.layers[self.dcc_combo.currentText()])),"Nuke": self.layers[self.dcc_combo.currentText()]}
@@ -146,7 +152,7 @@ class renderSubmit(base_class, generated_class):
         if self.dcc_combo.currentText() == "Nuke":
             self.shotTree.setColumnCount(2)
 
-        # for anything that needs to be created when changing the seq/app know, put it under the next IF statement.
+        # for anything that needs to be created when changing the seq/app now, put it under the next IF statement.
         if not self.currentseq == '':
 
             self.layerfunc(self.appdict[self.dcc_combo.currentText()])
@@ -159,15 +165,15 @@ class renderSubmit(base_class, generated_class):
                 headers.append(layer)
             self.shotTree.setHeaderLabels(headers)
 
-            for items in self.seqsdict[self.currentseq]:
+            for items in project_dict.proj_dict().seqsdict[self.currentseq]:
                 self.hierarchy = {"key":[items], "child":[items],"unique":["Unique"]}
                 childlist = []
-                if self.seqsdict[self.currentseq][items]['type'] == 'key':
-                    for splits in (self.seqsdict[self.currentseq][items]['childs'].rsplit(",")):
+                if project_dict.proj_dict().seqsdict[self.currentseq][items]['type'] == 'key':
+                    for splits in (project_dict.proj_dict().seqsdict[self.currentseq][items]['childs'].rsplit(",")):
                         childlist.append(splits)
                     self.hierarchy_create(items,headers,childlist)
 
-                elif self.seqsdict[self.currentseq][items]['type'] == 'unique':
+                elif project_dict.proj_dict().seqsdict[self.currentseq][items]['type'] == 'unique':
                     unique_shots.append(items)
 
             if unique_shots:
@@ -258,8 +264,8 @@ class renderSubmit(base_class, generated_class):
         root = self.shotTree.invisibleRootItem()
         key_count = root.childCount() #rows
         keyshot = []
-        for keyshots in self.seqsdict[self.currentseq]:
-            if self.seqsdict[self.currentseq][keyshots]['type'] == 'key':
+        for keyshots in project_dict.proj_dict().seqsdict[self.currentseq]:
+            if project_dict.proj_dict().seqsdict[self.currentseq][keyshots]['type'] == 'key':
                 keyshot.append(keyshots)
         for shot_count in range(key_count):
             key_shots = root.child(shot_count)
@@ -281,8 +287,8 @@ class renderSubmit(base_class, generated_class):
         root = self.shotTree.invisibleRootItem()
         key_count = root.childCount() #rows
         keyshot = []
-        for keyshots in self.seqsdict[self.currentseq]:
-            if self.seqsdict[self.currentseq][keyshots]['type'] == 'unique':
+        for keyshots in project_dict.proj_dict().seqsdict[self.currentseq]:
+            if project_dict.proj_dict().seqsdict[self.currentseq][keyshots]['type'] == 'unique':
                 keyshot.append(keyshots)
         for shot_count in range(key_count):
             key_shots = root.child(shot_count)
@@ -380,13 +386,12 @@ class renderSubmit(base_class, generated_class):
             action.triggered.connect(action_data['callback'])
         self.menu.popup(QtGui.QCursor.pos())
 
-
-
     def connect_buttons(self):
         self.shotTree.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.shotTree.customContextMenuRequested.connect(self.onTreeContextMenuRequested)
         self.sequence_comboBox.currentIndexChanged.connect(self.createkeyshots)
         self.submit_push.clicked.connect(self.onRender)
+        self.reload_push.clicked.connect(self.reload_csv)
         self.enableall_push.clicked.connect(self.enableAll)
         self.disableall_push.clicked.connect(self.disableAll)
         self.enablekeys_push.clicked.connect(self.enableKeys)
@@ -395,6 +400,7 @@ class renderSubmit(base_class, generated_class):
         self.clearsel_push.clicked.connect(self.clearselected)
         self.enableunique_push.clicked.connect(self.enableUniques)
         self.dcc_combo.currentIndexChanged.connect(self.createkeyshots)
+        
         
     def pullKeyComp(self,selmodel):
         root = self.shotTree.invisibleRootItem()
@@ -406,7 +412,7 @@ class renderSubmit(base_class, generated_class):
                 child_count = key_shot.childCount()
                 for childs in range(child_count):
                     children = key_shot.child(childs)
-                    if self.seqsdict[self.currentseq][children.text(0)]['type'] != 'key':
+                    if project_dict.proj_dict().seqsdict[self.currentseq][children.text(0)]['type'] != 'key':
                     # print('childs=',children.text(0))
                         nukecommand = f'{nukerun} -t {script} {self.currentseq} {children.text(0)} {key_shot.text(0)}'
                         print(nukecommand)
@@ -422,6 +428,43 @@ class renderSubmit(base_class, generated_class):
         pullcomp_done.setWindowTitle('Comp check')
         pullcomp_done.show()
         print('[[[PULL DONE]]]')
+
+    def reload_csv(self):
+        def getGoogleSeet(self,fileId, outDir, outFile):
+  
+            url = f'https://docs.google.com/spreadsheets/d/{fileId}/export?format=csv'
+            self.response = requests.get(url)
+            if self.response.status_code == 200:
+                self.filepath = os.path.abspath(os.path.join(outDir, outFile))
+                with open(self.filepath, 'wb') as f:
+                    f.write(self.response.content)
+                    print('CSV file saved to: {}'.format(self.filepath))    
+            else:
+                print(f'Error downloading Google Sheet: {self.response.status_code}')
+                # sys.exit(1)
+
+
+        self.aj_seq_data_id = '1iH0H03bc48dr9Z6MQ5St-5dsiZZLiLvNPuZY_7LVb7o'
+        self.aj_asset_data_id = '1_ijIUsmpBBhXnPV4l9ospjbaArNJQn_5Dvn1FRcC6r4'
+
+        self.outDir = 'P:/AndreJukebox/'
+        self.seqfile = 'aj_seq_data.csv'
+        self.assetfile = 'aj_asset_data.csv'
+        
+        getGoogleSeet(self,self.aj_seq_data_id,self.outDir, self.seqfile)
+        getGoogleSeet(self,self.aj_asset_data_id,self.outDir, self.assetfile)
+        
+
+        jasondict.seqsdict_export()
+        jasondict.assetdict_export()
+        # self.shotTree.clear()
+        project_dict.proj_dict().reload()
+        # self.seqlists()
+        # self.createkeyshots()
+        # sys.exit(0)
+        
+
+
 
 def main():
     # Creamos nuestra aplicacion
