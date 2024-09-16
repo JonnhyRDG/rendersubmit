@@ -8,7 +8,7 @@ import project_dict
 
 class rendersubmit():
     def __init__(self):
-        project_dict.dictread(self)
+        project_dict.proj_dict().dictread()
 
     # jobs file
     def joboptions(self,katargs):
@@ -62,8 +62,8 @@ class rendersubmit():
         for shotdict in katargs['shotsdict']:
             for shots in shotdict:
                 batchnameid = f'{katargs["seq"]}-{shots}__[{datetime.now().strftime("%d%m%Y%H%M%S")}]'
-                framestart = self.seqsdict[katargs["seq"]][shots]['start']
-                frameend = self.seqsdict[katargs["seq"]][shots]['end']
+                framestart = project_dict.proj_dict().seqsdict[katargs["seq"]][shots]['start']
+                frameend = project_dict.proj_dict().seqsdict[katargs["seq"]][shots]['end']
                 
                 for layer in shotdict[shots]:
                     # getting the version #
@@ -106,7 +106,10 @@ class rendersubmit():
                         frames_exp_list.append(exp)
                     sep = ','
                     autoprogstep = (sep.join(frames_exp_list))
-                    print(autoprogstep)
+                    print(f'THIS IS THE LEN {frame_len}')
+                    if frame_len == 0:
+                        autoprogstep = framestart
+                    print(f'THERE ARE THE MOTHERFUCKING FRAMES BRO{autoprogstep}')
 
                     fmlframes = []
                     middleframe = int((((int(frameend)) - (int(framestart)))/2)+1000)
@@ -117,7 +120,7 @@ class rendersubmit():
                     frames_dict = {}
                     frames_dict['Expression']= katargs['frameexp'] if katargs["stepstate"] == 0 else f'{katargs["frameexp"]}x{katargs["step"]}'
                     frames_dict['FML']= fmlstring
-                    frames_dict['Keyframe'] = self.seqsdict[katargs["seq"]][shots]['keyframe']
+                    frames_dict['Keyframe'] = project_dict.proj_dict().seqsdict[katargs["seq"]][shots]['keyframe']
                     frames_dict['Shotinfo']= f'{framestart}-{frameend}' if katargs["stepstate"] == 0 else f'{framestart}-{frameend}x{katargs["step"]}'
                     frames_dict['autoprogstep'] = autoprogstep
 
