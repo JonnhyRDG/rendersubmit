@@ -89,9 +89,7 @@ class renderSubmit(base_class, generated_class):
         self.seqcombolist = ['']
         for seqs in project_dict.proj_dict().seqsdict:
             self.seqcombolist.append(seqs)
-        print(self.seqcombolist)
-
-
+        # print(self.seqcombolist)
 
     def populateCombo(self):
         self.seqlists()
