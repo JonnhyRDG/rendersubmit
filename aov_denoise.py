@@ -4,11 +4,12 @@ import aov_dict_read
 import sys
 
 class denoise():
-    def __init__(self,katargs):
-        self.seq = katargs['seq']
-        self.shot = katargs['shot']
-        self.version = katargs['version']
-        self.layer = katargs['layer']
+    def __init__(self):
+        self.seq = sys.argv[1]
+        self.shot = sys.argv[2]
+        self.version = sys.argv[4]
+        self.layer = sys.argv[3]
+
         self.adr = aov_dict_read.aov_dict()
 
     def lg_denoise(self,aov,radius,frame):
@@ -36,7 +37,7 @@ class denoise():
         self.albedo = f'P:/AndreJukebox_output/renders/concept_animatic/{self.seq}/{self.shot}/lgt/{self.layer}/{self.version}/denoise_albedo/{self.layer}_denoise_albedo.{frame}.linear.exr'
         
         if os.path.exists(self.beautyraw):
-            if not os.path.exists:
+            if not os.path.exists(self.lg):
                 self.command_lg_denoise = f'{self.noice} -pr 1 -sr {radius} -variance 0.25 -ef 2 -i {self.lgraw} -i {self.variance} -i {self.albedo} -i {self.N} -i {self.Z} -o {self.lg}'
                 print(self.command_lg_denoise)
                 subprocess.call(self.command_lg_denoise, shell=True)
@@ -47,19 +48,13 @@ class denoise():
             print(f"{aov} does not exist")
             print(self.lg)
 
-    def create_denoised(self,framerange):
+    def create_denoised(self):
+        self.framerange = f'{sys.argv[5]}'
         self.adr.dictread(self.seq,self.shot,self.layer)
-        for frame in range(int(framerange.split("-")[0]),int(framerange.split("-")[1])+1):
+        for frame in range(int(self.framerange.split("-")[0]),int(self.framerange.split("-")[1])+1):
             self.aovlist = []
             for keys in self.adr.aovdict:
                 self.lg_denoise(keys,self.adr.aovdict[keys],frame=frame)
                 self.aovlist.append(keys)
             
-
-# seq = '010_NCT'
-# shot = 's0190'
-# layer = 'base_all'
-# version = '0014'
-# # framerange = sys.argv[1]
-# framerange = '1001-1060'
-# denoise().create_denoised(framerange)
+denoise().create_denoised()
