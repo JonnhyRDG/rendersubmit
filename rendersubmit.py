@@ -6,10 +6,39 @@ import re
 from datetime import datetime
 import project_dict
 
+# import aov_denoise as den
+
 class rendersubmit():
     def __init__(self):
         project_dict.proj_dict().dictread()
 
+####### BEAUTY REBUILD PLUGIN AND JOB TXT GENERATORS ########    
+    def bbo_jobs(self):
+        self.bbo_job_args = []
+      
+    def write_bbo_job(self):
+        with open('args/beautyjob.txt','w') as output:
+            for self.jobargs in self.bbo_job_args:
+                output.write(self.jobargs + '\n')
+
+    def bbo_plugin(self):
+        self.bbo_plug_args = []
+
+        self.exe = "Executable=C:/Program Files/Python311/python.exe" 
+        self.bbo_plug_args.append(self.exe)
+
+        self.script = "ScriptFile=P:/AndreJukebox/pipe/ajbackend/rendersubmit/beauty_build_oiio.py"
+        self.bbo_plug_args.append(self.script)
+
+        self.pyver = "Version=3.11"
+        self.bbo_plug_args.append(self.pyver)
+
+    def write_bbo_plug(self):
+        with open('args/beautyplugin.txt','w') as output:
+            for self.plugargs in self.bbo_plug_args:
+                output.write(self.plugargs + '\n')
+    
+    
     # jobs file
     def joboptions(self,katargs):
         # add arguments to jobargs list
@@ -35,7 +64,7 @@ class rendersubmit():
         self.jobargs.append(pooluser)
 
     def writejobs(self):
-        with open('jobs.txt','w') as output:
+        with open('args/jobs.txt','w') as output:
             for self.jobs in self.jobargs:
                 output.write(self.jobs + '\n')
 
@@ -46,7 +75,7 @@ class rendersubmit():
         # self.plugargs.append(userlayer)
 
     def writeplugs(self):
-        with open('plugins.txt','w') as output:
+        with open('args/plugins.txt','w') as output:
             for self.args in self.plugargs:
                 output.write(self.args + '\n')
 
@@ -141,8 +170,6 @@ class rendersubmit():
                     self.jobargs.append(batchname)
                     katver = f'EnvironmentKeyValue0=katver={self.lastver}'
                     self.jobargs.append(katver)
-                    # self.postscript = f'PreJobScript=p:/AndreJukebox/pipe/ajbackend/rendersubmit/rendersubmit_ui.py'
-                    # self.jobargs.append(self.postscript)
                     self.writejobs()
 
                     # ---- writing plugin file
@@ -153,12 +180,51 @@ class rendersubmit():
                     self.plugargs.append(shotvar)
                     seqvar = f'varSeq=seq={katargs["seq"]}'
                     self.plugargs.append(seqvar)
+                    modevar = f'varMode=mode={katargs["mode"]}'
+                    self.plugargs.append(modevar)
+                    resvar = f'varRes=res={katargs["res"]}'
+                    self.plugargs.append(resvar)
+                    samplingvar = f'varSampling=sampling={katargs["sampling"]}'
+                    self.plugargs.append(samplingvar)
                     self.writeplugs()
-                    
+
+                    ### WRITING BEAUTY REBUILD JOBS ARGS ###
+                    self.bbo_jobs()
+                    self.plugin = "Plugin=Python" 
+                    self.bbo_job_args.append(self.plugin)
+                    self.name = "Name=beauty_rebuild" 
+                    self.bbo_job_args.append(self.name)
+                    self.user = "UserName=jonnhy"
+                    self.bbo_job_args.append(self.user)
+                    self.frames = frames
+                    self.bbo_job_args.append(self.frames)
+                    self.chunk = "ChunkSize=10" 
+                    self.bbo_job_args.append(self.chunk)
+                    self.bbo_job_args.append(batchname)
+                    self.write_bbo_job()
+
+                    ### WRITING BEAUTY REBUILD PLUGIN ARGS ###
+                    self.bbo_plugin()
+                    self.arguments = "Arguments="
+                    self.arguments += f"{katargs['seq']} "
+                    self.arguments += f"{shots} "
+                    self.arguments += f"{layer} "
+                    self.arguments += f"{self.lastver} "
+                    self.arguments += "<STARTFRAME>-<ENDFRAME> "
+                    self.bbo_plug_args.append(self.arguments)
+                    self.bbo_plug_args.append(outputpathrgba)
+                    self.bbo_plug_args.append(outputfilergba)
+                    self.write_bbo_plug()
+
                     rendercommand = {
-                        'Katana': f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/plugins.txt" "P:/AndreJukebox/seq/{katargs["seq"]}/s0000/lighting/shot.katana"',
+                        'Katana': f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/plugins.txt" "P:/AndreJukebox/seq/{katargs["seq"]}/s0000/lighting/shot.katana"',
                         'Nuke': f'nuke.execute({layer}, {framestart}, {frameend})'
                      }
                     print(rendercommand[katargs['userdcc']])
-                    command = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/plugins.txt" "P:/AndreJukebox/seq/{katargs["seq"]}/s0000/lighting/shot.katana"'
-                    subprocess.call(command, shell=True)
+                    command = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/plugins.txt" "P:/AndreJukebox/seq/{katargs["seq"]}/s0000/lighting/shot.katana"'
+
+                    # subprocess.call(command, shell=True)
+                    beautycommand = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/beautyjob.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/beautyplugin.txt"'
+                    # subprocess.call(beautycommand, shell=True)
+                    
+
