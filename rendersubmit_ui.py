@@ -228,6 +228,9 @@ class renderSubmit(base_class, generated_class):
         argdict['userpriority']=str(self.prio_line.text())
         argdict['pool']=str(self.group_combo.currentText())
         argdict['version']=self.versionup
+        argdict['mode']=str(self.mode_combo.currentText())
+        argdict['res']=str(self.res_combo.currentText())
+        argdict['sampling']=str(self.sampling_combo.currentText())
         
         if not self.currentseq == '':
             rendersubmit.rendersubmit().submit(katargs=argdict)

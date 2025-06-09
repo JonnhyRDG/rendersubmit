@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1173</width>
+    <width>1264</width>
     <height>1264</height>
    </rect>
   </property>
@@ -750,9 +750,9 @@
          <widget class="QWidget" name="verticalLayoutWidget_4">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>1000</y>
-            <width>311</width>
+            <x>0</x>
+            <y>990</y>
+            <width>341</width>
             <height>101</height>
            </rect>
           </property>
@@ -779,12 +779,12 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>250</y>
+            <y>350</y>
             <width>331</width>
-            <height>31</height>
+            <height>41</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <layout class="QVBoxLayout" name="frames_vlayout">
            <item>
             <layout class="QHBoxLayout" name="frame_hlayout">
              <item>
@@ -846,7 +846,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>290</y>
+            <y>390</y>
             <width>331</width>
             <height>41</height>
            </rect>
@@ -963,6 +963,158 @@
              <item>
               <property name="text">
                <string>workstation</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="horizontalLayoutWidget_3">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>320</y>
+            <width>331</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="mode_hor_layout">
+           <item>
+            <layout class="QVBoxLayout" name="mode_vert_layout">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_6">
+               <item>
+                <widget class="QLabel" name="mode_label">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>MODE</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QComboBox" name="mode_combo">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>30</height>
+              </size>
+             </property>
+             <item>
+              <property name="text">
+               <string>prev</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>denoise</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="horizontalLayoutWidget_4">
+          <property name="geometry">
+           <rect>
+            <x>9</x>
+            <y>250</y>
+            <width>331</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="res_hlayout">
+           <item>
+            <widget class="QLabel" name="res_label">
+             <property name="font">
+              <font>
+               <pointsize>14</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Resolution</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="res_combo">
+             <item>
+              <property name="text">
+               <string>high</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>mid</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>low</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>test</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="horizontalLayoutWidget_5">
+          <property name="geometry">
+           <rect>
+            <x>9</x>
+            <y>280</y>
+            <width>331</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="sampling_hlayout">
+           <item>
+            <widget class="QLabel" name="sampling_label">
+             <property name="font">
+              <font>
+               <pointsize>14</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Sampling</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="sampling_combo">
+             <item>
+              <property name="text">
+               <string>mid</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>high</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>low</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>test</string>
               </property>
              </item>
             </widget>
