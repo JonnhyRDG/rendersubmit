@@ -37,6 +37,31 @@ class rendersubmit():
         with open('args/beautyplugin.txt','w') as output:
             for self.plugargs in self.bbo_plug_args:
                 output.write(self.plugargs + '\n')
+
+    def den_jobs(self):
+        self.den_job_args = []
+
+    def write_den_job(self):
+        with open('args/denjob.txt','w') as output:
+            for self.denjobargs in self.den_job_args:
+                output.write(self.denjobargs + '\n')
+
+    def den_plugin(self):
+        self.den_plug_args = []
+
+        self.den_exe = "Executable=C:/Program Files/Python311/python.exe" 
+        self.den_plug_args.append(self.den_exe)
+
+        self.den_script = "ScriptFile=P:/AndreJukebox/pipe/ajbackend/rendersubmit/aov_denoise.py"
+        self.den_plug_args.append(self.den_script)
+
+        self.den_plug_args.append(self.pyver)
+
+    def write_den_plug(self):
+        with open('args/denplugin.txt','w') as output:
+            for self.denplugargs in self.den_plug_args:
+                output.write(self.denplugargs + '\n')
+
     
     
     # jobs file
@@ -54,8 +79,8 @@ class rendersubmit():
         initialstatus = f'InitialStatus={katargs["userstatus"]}'
         self.jobargs.append(initialstatus)
 
-        chunksize = f'ChunkSize={katargs["userchunk"]}'
-        self.jobargs.append(chunksize)
+        self.chunksize = f'ChunkSize={katargs["userchunk"]}'
+        self.jobargs.append(self.chunksize)
 
         priority = f'Priority={katargs["userpriority"]}'
         self.jobargs.append(priority)
@@ -78,6 +103,11 @@ class rendersubmit():
         with open('args/plugins.txt','w') as output:
             for self.args in self.plugargs:
                 output.write(self.args + '\n')
+
+    def write_multiple_args(self):
+        with open('args/args.txt','w') as output:
+            for self.line in self.args:
+                output.write(self.line + '\n')
 
     # cmds file
     def cmdsoptions(self):
@@ -135,10 +165,8 @@ class rendersubmit():
                         frames_exp_list.append(exp)
                     sep = ','
                     autoprogstep = (sep.join(frames_exp_list))
-                    print(f'THIS IS THE LEN {frame_len}')
                     if frame_len == 0:
                         autoprogstep = framestart
-                    print(f'THERE ARE THE MOTHERFUCKING FRAMES BRO{autoprogstep}')
 
                     fmlframes = []
                     middleframe = int((((int(frameend)) - (int(framestart)))/2)+1000)
@@ -159,8 +187,6 @@ class rendersubmit():
                     jobname = f'Name={katargs["seq"]}-{shots} - {layer}'
                     self.jobargs.append(jobname)
                     frames = f'Frames={frames_dict[katargs["framesdict"]]}'
-                    print(katargs['framesdict'])
-                    print(frames)
                     self.jobargs.append(frames)
                     outputpathrgba = f'OutputDirectory0=P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/{self.lastver}/beauty'
                     self.jobargs.append(outputpathrgba)
@@ -192,7 +218,11 @@ class rendersubmit():
                     self.bbo_jobs()
                     self.plugin = "Plugin=Python" 
                     self.bbo_job_args.append(self.plugin)
-                    self.name = "Name=beauty_rebuild" 
+                    comments = f'Comment={katargs["usercomment"]}'
+                    self.bbo_job_args.append(comments)
+                    pooluser = f'Pool={katargs["pool"]}'
+                    self.bbo_job_args.append(pooluser)
+                    self.name = f'Name={katargs["seq"]}-{shots} - {layer} - beauty_rebuild'
                     self.bbo_job_args.append(self.name)
                     self.user = "UserName=jonnhy"
                     self.bbo_job_args.append(self.user)
@@ -216,15 +246,85 @@ class rendersubmit():
                     self.bbo_plug_args.append(outputfilergba)
                     self.write_bbo_plug()
 
+                    #### WRITING DENOISE JOB
+                    self.den_jobs()
+                    self.den_plug = "Plugin=Python"
+                    self.den_job_args.append(self.den_plug)                    
+                    
+                    comments = f'Comment={katargs["usercomment"]}'
+                    self.den_job_args.append(comments)
+
+                    pooluser = f'Pool={katargs["pool"]}'
+                    self.den_job_args.append(pooluser)
+
+                    self.den_job_args.append(batchname)
+                    self.den_job_name=f'Name={katargs["seq"]}-{shots} - {layer} - aov_denoise'
+                    self.den_job_args.append(self.den_job_name)
+                    self.den_job_args.append(self.user)
+                    self.den_job_args.append(frames)
+                    self.den_job_args.append(self.chunksize)
+                    self.den_job_args.append(outputpathrgba)
+                    self.den_job_args.append(outputfilergba)
+                    self.write_den_job()
+
+                    #### WRITING DENOISE PLUGIN
+                    self.den_plugin()
+                    self.arguments = "Arguments="
+                    self.arguments += f"{katargs['seq']} "
+                    self.arguments += f"{shots} "
+                    self.arguments += f"{layer} "
+                    self.arguments += f"{self.lastver} "
+                    self.arguments += "<STARTFRAME>-<ENDFRAME> "
+                    self.den_plug_args.append(self.arguments)
+                    self.den_plug_args.append(outputpathrgba)
+                    self.den_plug_args.append(outputfilergba)
+                    self.write_den_plug()
+
+                    #### WRITIG MULTIPLE JOBS ARGS
+                    self.args = []
+
+                    self.dep = "-Dependent"
+                    self.job = "-Job"
+
+                    self.submitjobs = "-SubmitMultipleJobs"
+                    self.katjob = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/jobs.txt'
+                    self.katplug = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/plugins.txt'
+                    self.katfile = f'P:/AndreJukebox/seq/{katargs["seq"]}/s0000/lighting/shot.katana'
+
+                    self.denjob = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/denjob.txt'
+                    self.denplug = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/denplugin.txt'
+
+                    self.beautyjob = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/beautyjob.txt'
+                    self.beautyplug = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/beautyplugin.txt'
+
+                    self.args.append(self.submitjobs)
+                    self.args.append(self.dep)
+                    self.args.append(self.job)
+                    self.args.append(self.katjob)
+                    self.args.append(self.katplug)
+                    self.args.append(self.katfile)
+                    self.args.append(self.job)
+                    self.args.append(self.denjob)
+                    self.args.append(self.denplug)
+                    self.args.append(self.job)                    
+                    self.args.append(self.beautyjob)
+                    self.args.append(self.beautyplug)
+                    self.write_multiple_args()
+
+                 
                     rendercommand = {
                         'Katana': f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/plugins.txt" "P:/AndreJukebox/seq/{katargs["seq"]}/s0000/lighting/shot.katana"',
                         'Nuke': f'nuke.execute({layer}, {framestart}, {frameend})'
                      }
-                    print(rendercommand[katargs['userdcc']])
-                    command = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/plugins.txt" "P:/AndreJukebox/seq/{katargs["seq"]}/s0000/lighting/shot.katana"'
 
+                    command = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/plugins.txt" "P:/AndreJukebox/seq/{katargs["seq"]}/s0000/lighting/shot.katana"'
                     # subprocess.call(command, shell=True)
+
                     beautycommand = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/beautyjob.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/beautyplugin.txt"'
                     # subprocess.call(beautycommand, shell=True)
                     
+                    denoisecommand = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/denjob.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/denplugin.txt"'
+                    # subprocess.call(denoisecommand, shell=True)
 
+                    multiplecommand = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/args.txt"'
+                    subprocess.call(multiplecommand, shell=True)
