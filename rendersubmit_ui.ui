@@ -1017,6 +1017,11 @@
                <string>denoise</string>
               </property>
              </item>
+             <item>
+              <property name="text">
+               <string>denoise_only</string>
+              </property>
+             </item>
             </widget>
            </item>
           </layout>
