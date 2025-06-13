@@ -2,6 +2,7 @@ import OpenImageIO as oiio
 import os
 import sys
 import aov_dict_read
+# import symlink as sl
 
 class beautyBuild:
     def __init__(self):
@@ -15,6 +16,7 @@ class beautyBuild:
 
     def clear_buffer(self):
         self.subs_combined_buf = None
+        self.subs_combined_buf_den = None        
     
     def beauty_paths(self,frame):
         # path for the final denoised beauty
@@ -131,13 +133,12 @@ class beautyBuild:
         self.adr.dictread(self.seq,self.shot,self.layer)
         self.frames_range()
 
+        # checking if the shot dictionary exists
         if os.path.exists(self.adr.jsonpath):
             self.frames_range()
-        
             # wrap the beautyBuild class in a var because I'm lazy
             for frame in range(int(self.framerange.split("-")[0]),int(self.framerange.split("-")[1])+1):
-                self.subs_combined_buf = None
-                self.subs_combined_buf_den = None
+                self.clear_buffer()
                 self.beauty_paths(frame)
                 self.buffer_beauty()
                 # This will loop through the dict and operate with each key to output the auxiliary exrs
@@ -152,6 +153,7 @@ class beautyBuild:
 
                 # Get rid of the auxiliary files.
                 self.clean_up()
+        # sl.symlink().sym(seq=self.seq,shot=self.shot,layer=self.layer,version=self.version)
 
 bbo = beautyBuild()
 bbo.rebuild_beauty()

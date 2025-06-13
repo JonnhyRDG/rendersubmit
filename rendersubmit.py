@@ -62,8 +62,54 @@ class rendersubmit():
             for self.denplugargs in self.den_plug_args:
                 output.write(self.denplugargs + '\n')
 
-    
-    
+    def rename_jobs(self):
+            self.rename_job_args = []
+
+    def write_rename_job(self):
+        with open('args/renamejob.txt','w') as output:
+            for self.renamejobargs in self.rename_job_args:
+                output.write(self.renamejobargs + '\n')
+
+    def rename_plugin(self):
+        self.rename_plug_args = []
+
+        self.rename_exe = "Executable=C:/Program Files/Python311/python.exe" 
+        self.rename_plug_args.append(self.rename_exe)
+
+        self.rename_script = "ScriptFile=P:/AndreJukebox/pipe/ajbackend/rendersubmit/aov_rename.py"
+        self.rename_plug_args.append(self.rename_script)
+
+        self.rename_plug_args.append(self.pyver)
+
+    def write_rename_plug(self):
+        with open('args/renameplugin.txt','w') as output:
+            for self.renameplugargs in self.rename_plug_args:
+                output.write(self.renameplugargs + '\n')
+
+    def sym_jobs(self):
+                self.sym_job_args = []
+
+    def write_sym_job(self):
+        with open('args/symjob.txt','w') as output:
+            for self.symjobargs in self.sym_job_args:
+                output.write(self.symjobargs + '\n')
+
+    def sym_plugin(self):
+        self.sym_plug_args = []
+
+        self.sym_exe = "Executable=C:/Program Files/Python311/python.exe" 
+        self.sym_plug_args.append(self.sym_exe)
+
+        self.sym_script = "ScriptFile=P:/AndreJukebox/pipe/ajbackend/rendersubmit/symlink.py"
+        self.sym_plug_args.append(self.sym_script)
+
+        self.sym_plug_args.append(self.pyver)
+
+    def write_sym_plug(self):
+        with open('args/symplugin.txt','w') as output:
+            for self.symplugargs in self.sym_plug_args:
+                output.write(self.symplugargs + '\n')
+
     # jobs file
     def joboptions(self,katargs):
         # add arguments to jobargs list
@@ -184,7 +230,7 @@ class rendersubmit():
 
                     # ---- writing jobs file
                     self.joboptions(katargs)
-                    jobname = f'Name={katargs["seq"]}-{shots} - {layer}'
+                    jobname = f'Name={katargs["seq"]}-{shots} - {layer} - ktoa render'
                     self.jobargs.append(jobname)
                     frames = f'Frames={frames_dict[katargs["framesdict"]]}'
                     self.jobargs.append(frames)
@@ -206,8 +252,14 @@ class rendersubmit():
                     self.plugargs.append(shotvar)
                     seqvar = f'varSeq=seq={katargs["seq"]}'
                     self.plugargs.append(seqvar)
-                    modevar = f'varMode=mode={katargs["mode"]}'
+                    
+                    if katargs['mode'] == "prev":
+                        katargsmode="prev"
+                    if "denoise" in katargs['mode']:
+                        katargsmode = "denoise"
+                    modevar = f'varMode=mode={katargsmode}'
                     self.plugargs.append(modevar)
+                    
                     resvar = f'varRes=res={katargs["res"]}'
                     self.plugargs.append(resvar)
                     samplingvar = f'varSampling=sampling={katargs["sampling"]}'
@@ -280,6 +332,73 @@ class rendersubmit():
                     self.den_plug_args.append(outputfilergba)
                     self.write_den_plug()
 
+                    #### WRITING RENAME JOB
+                    self.rename_jobs()
+                    self.rename_plug = "Plugin=Python"
+                    self.rename_job_args.append(self.rename_plug)                    
+                    
+                    comments = f'Comment={katargs["usercomment"]}'
+                    self.rename_job_args.append(comments)
+             
+                    self.rename_job_args.append(pooluser)
+                    self.name = f'Name={katargs["seq"]}-{shots} - {layer} - aov_prep'
+                    self.rename_job_args.append(batchname)
+                    self.rename_job_name=f'Name={katargs["seq"]}-{shots} - {layer} - aov_rename'
+                    self.rename_job_args.append(self.rename_job_name)
+                    self.rename_job_args.append(self.user)
+                    self.framerange = f'Frames=1'
+                    self.rename_job_args.append(self.framerange)
+                    renchunk = len(range(int(framestart),int(frameend) + 1))
+                    self.renchunksize = f'ChunkSize={renchunk}'
+                    self.rename_job_args.append(self.renchunksize)
+                    self.write_rename_job()
+
+                    #### WRITING RENAME PLUGIN
+                    self.rename_plugin()
+                    self.arguments = "Arguments="
+                    self.arguments += f"{katargs['seq']} "
+                    self.arguments += f"{shots} "
+                    self.arguments += f"{layer} "
+                    self.arguments += f"{self.lastver} "
+                    self.arguments += f"{framestart}-{frameend} "
+                    self.rename_plug_args.append(self.arguments)
+                    self.rename_plug_args.append(outputpathrgba)
+                    self.rename_plug_args.append(outputfilergba)
+                    self.write_rename_plug()
+
+                    #### WRITING SYM JOB
+                    self.sym_jobs()
+                    self.sym_plug = "Plugin=Python"
+                    self.sym_job_args.append(self.sym_plug)                    
+                    
+                    comments = f'Comment={katargs["usercomment"]}'
+                    self.sym_job_args.append(comments)
+                    self.sympooluser = 'Pool=rendernode'
+                    self.sym_job_args.append(self.sympooluser)
+                    self.sym_job_args.append(batchname)
+                    self.sym_job_name=f'Name={katargs["seq"]}-{shots} - {layer} - symlink'
+                    self.sym_job_args.append(self.sym_job_name)
+                    self.sym_job_args.append(self.user)
+                    self.framerange = f'Frames=1'
+                    self.sym_job_args.append(self.framerange)
+                    self.renchunksize = f'ChunkSize=1'
+                    self.sym_job_args.append(self.renchunksize)
+                    self.sympriority = 'Priority=90'
+                    self.sym_job_args.append(self.sympriority)
+                    self.write_sym_job()
+
+                    #### WRITING SYM PLUGIN
+                    self.sym_plugin()
+                    self.arguments = "Arguments="
+                    self.arguments += f"{katargs['seq']} "
+                    self.arguments += f"{shots} "
+                    self.arguments += f"{layer} "
+                    self.arguments += f"{self.lastver} "
+                    self.sym_plug_args.append(self.arguments)
+                    self.sym_plug_args.append(outputpathrgba)
+                    self.sym_plug_args.append(outputfilergba)
+                    self.write_sym_plug()                    
+
                     #### WRITIG MULTIPLE JOBS ARGS
                     self.args = []
 
@@ -297,34 +416,46 @@ class rendersubmit():
                     self.beautyjob = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/beautyjob.txt'
                     self.beautyplug = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/beautyplugin.txt'
 
+                    self.renamejob = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/renamejob.txt'
+                    self.renameplugin = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/renameplugin.txt'
+
+                    self.symjob = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/symjob.txt'
+                    self.symplugin = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/symplugin.txt'
+
                     self.args.append(self.submitjobs)
                     self.args.append(self.dep)
+
+                    # katana job
+                    if katargs['mode'] == "prev" or katargs['mode'] == "denoise":
+                        self.args.append(self.job)
+                        self.args.append(self.katjob)
+                        self.args.append(self.katplug)
+                        self.args.append(self.katfile)
+
+                    # rename job
+                    if katargs['mode'] == "denoise" or katargs['mode'] == "denoise_only":
+                        self.args.append(self.job)
+                        self.args.append(self.renamejob)
+                        self.args.append(self.renameplugin)
+
+                    # denoise job
+                    if katargs['mode'] == "denoise" or katargs['mode'] == "denoise_only":
+                        self.args.append(self.job)
+                        self.args.append(self.denjob)
+                        self.args.append(self.denplug)
+
+                    # beauty rebuild job
+                    if katargs['mode'] == "denoise" or katargs['mode'] == "denoise_only":
+                        self.args.append(self.job)
+                        self.args.append(self.beautyjob)
+                        self.args.append(self.beautyplug)
+
+                    #symlink job
                     self.args.append(self.job)
-                    self.args.append(self.katjob)
-                    self.args.append(self.katplug)
-                    self.args.append(self.katfile)
-                    self.args.append(self.job)
-                    self.args.append(self.denjob)
-                    self.args.append(self.denplug)
-                    self.args.append(self.job)                    
-                    self.args.append(self.beautyjob)
-                    self.args.append(self.beautyplug)
-                    self.write_multiple_args()
-
-                 
-                    rendercommand = {
-                        'Katana': f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/plugins.txt" "P:/AndreJukebox/seq/{katargs["seq"]}/s0000/lighting/shot.katana"',
-                        'Nuke': f'nuke.execute({layer}, {framestart}, {frameend})'
-                     }
-
-                    command = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/jobs.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/plugins.txt" "P:/AndreJukebox/seq/{katargs["seq"]}/s0000/lighting/shot.katana"'
-                    # subprocess.call(command, shell=True)
-
-                    beautycommand = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/beautyjob.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/beautyplugin.txt"'
-                    # subprocess.call(beautycommand, shell=True)
+                    self.args.append(self.symjob)
+                    self.args.append(self.symplugin)
                     
-                    denoisecommand = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/denjob.txt" "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/denplugin.txt"'
-                    # subprocess.call(denoisecommand, shell=True)
+                    self.write_multiple_args()
 
                     multiplecommand = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/args.txt"'
                     subprocess.call(multiplecommand, shell=True)
