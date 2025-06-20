@@ -10,8 +10,9 @@ import rendersubmit
 import project_dict
 import requests
 import jasondict
+from datetime import datetime
 
-nukerun = '"P:/AndreJukebox/pipe/ajnuke/aj_nuke_14.bat"'
+nukerun = '"P:/AndreJukebox/pipe/ajnuke/aj_nuke.bat"'
 script = '"P:/AndreJukebox/pipe/ajbackend/rendersubmit/nukepublish.py"'
 
 # Esto carga el archivo .ui
@@ -83,7 +84,7 @@ class renderSubmit(base_class, generated_class):
         self.layers['Katana'] = self.layerlist
 
     def nukelayers(self):
-        self.layers['Nuke'] = ['write_output']
+        self.layers['Nuke'] = ['write_out']
     
     def seqlists(self):
         self.seqcombolist = ['']
@@ -197,7 +198,20 @@ class renderSubmit(base_class, generated_class):
         else:
             self.versionup = 0
 
+        if self.nuke_check.isChecked():
+            self.nuke = 1
+        else:
+            self.nuke = 0    
+
+        if self.video_check.isChecked():
+            self.video = 1
+        else:
+            self.video = 0
+
         argdict = {}
+        argdict['userdcc']=str(self.dcc_combo.currentText())
+        render_dict = {}
+
         render_dict = {}
         root = self.shotTree.invisibleRootItem()
         key_count = root.childCount() #rows
@@ -221,7 +235,6 @@ class renderSubmit(base_class, generated_class):
         argdict['framesdict']=self.frame_combo.currentText()
         argdict['frameexp']=self.expressionbtn.text()
         argdict['shotsdict']=[render_dict]
-        argdict['userdcc']=str(self.dcc_combo.currentText())
         argdict['usercomment']=str(self.comment_edit.toPlainText())
         argdict['userstatus']=str(self.submitStatus_combo.currentText())
         argdict['userchunk']=str(self.tasksize_line.text())
@@ -231,6 +244,9 @@ class renderSubmit(base_class, generated_class):
         argdict['mode']=str(self.mode_combo.currentText())
         argdict['res']=str(self.res_combo.currentText())
         argdict['sampling']=str(self.sampling_combo.currentText())
+        argdict['nukerender']=self.nuke
+        argdict['videorender']=self.video
+        argdict['batchid']=datetime.now().strftime("%d%m%Y%H%M%S")
         
         if not self.currentseq == '':
             rendersubmit.rendersubmit().submit(katargs=argdict)
@@ -316,6 +332,13 @@ class renderSubmit(base_class, generated_class):
         else:
             if self.expressionbtn:
                 self.expressionbtn.setVisible(0)
+        if self.dcc_combo.currentText() == "Katana":
+            self.nuke_check.setVisible(1)
+            self.nuke_check.setEnabled(1)
+        else:
+            self.nuke_check.setCheckState(QtCore.Qt.Unchecked)
+            self.nuke_check.setEnabled(0)
+            # self.nuke_check.setVisible(0)
 
     def stepspin(self):
         if self.step_check.isChecked():
@@ -397,6 +420,8 @@ class renderSubmit(base_class, generated_class):
         self.shotTree.customContextMenuRequested.connect(self.onTreeContextMenuRequested)
         self.sequence_comboBox.currentIndexChanged.connect(self.createkeyshots)
         self.submit_push.clicked.connect(self.onRender)
+        self.publish_push.clicked.connect(self.pullKeyComp)
+        self.publishsubmit_push.clicked.connect(self.publish_and_submit)
         self.reload_push.clicked.connect(self.reload_csv)
         self.enableall_push.clicked.connect(self.enableAll)
         self.disableall_push.clicked.connect(self.disableAll)
@@ -406,29 +431,41 @@ class renderSubmit(base_class, generated_class):
         self.clearsel_push.clicked.connect(self.clearselected)
         self.enableunique_push.clicked.connect(self.enableUniques)
         self.dcc_combo.currentIndexChanged.connect(self.createkeyshots)
+        self.dcc_combo.currentIndexChanged.connect(self.framesui)
         
         
-    def pullKeyComp(self,selmodel):
+    def pullKeyComp(self):
+        render_dict = {}
         root = self.shotTree.invisibleRootItem()
-        for parent in selmodel:
-            key_shot = root.child(parent.parent().row())
-            nukefile = f'P:/AndreJukebox/seq/{self.currentseq}/{key_shot.text(0)}/comp/workfile.nk'
+        key_count = root.childCount() #rows
+        shotlist = []
+        
+        for i in range(key_count):
+            key_item = root.child(i)
+            child_count = key_item.childCount()
+            for child_index in range(child_count):
+                
+                shot_name = key_item.child(child_index).text(0)
+                for j in range(len(self.layers[self.dcc_combo.currentText()])):
+                    checkbox = self.shotTree.itemWidget(key_item.child(child_index), j+1)
+                    if checkbox and checkbox.isChecked():
+                        if shot_name not in shotlist:
+                            print(shot_name)
+                            shotlist.append(shot_name)
+        
+        for shots in shotlist:
+            nk_source = project_dict.proj_dict().seqsdict[self.currentseq][shots]["comp"]
+            nukefile = f'P:/AndreJukebox/seq/{self.currentseq}/{nk_source}/comp/workfile.nk'
             if os.path.isfile(nukefile):
-                print('keys=',key_shot.text(0))
-                child_count = key_shot.childCount()
-                for childs in range(child_count):
-                    children = key_shot.child(childs)
-                    if project_dict.proj_dict().seqsdict[self.currentseq][children.text(0)]['type'] != 'key':
-                    # print('childs=',children.text(0))
-                        nukecommand = f'{nukerun} -t {script} {self.currentseq} {children.text(0)} {key_shot.text(0)}'
-                        print(nukecommand)
-                        subprocess.call(nukecommand, shell=True)
-                    else:
-                        continue
+                nukecommand = f'{nukerun} -t {script} {self.currentseq} {shots} {nk_source}'
+                print(nukecommand)
+                subprocess.call(nukecommand, shell=True)
+
             else:
                 nocomp = QtWidgets.QMessageBox(parent=self.shotTree,text='There is no nuke file to pull from. Bravo!')
                 nocomp.setWindowTitle('Nuke comp check')
                 nocomp.show()
+                
 
         pullcomp_done = QtWidgets.QMessageBox(parent=self.shotTree,text='Comps has been pulled from parent')
         pullcomp_done.setWindowTitle('Comp check')
@@ -467,7 +504,9 @@ class renderSubmit(base_class, generated_class):
         self.populateCombo()
         self.createkeyshots()
         
-
+    def publish_and_submit(self):
+        self.pullKeyComp()
+        self.onRender()
 
 def main():
     # Creamos nuestra aplicacion
