@@ -1,12 +1,8 @@
-import json
 import subprocess
 import glob
 import os
 import re
-from datetime import datetime
 import project_dict
-
-# import aov_denoise as den
 
 class rendersubmit():
     def __init__(self):
@@ -87,14 +83,19 @@ class rendersubmit():
                 output.write(self.renameplugargs + '\n')
 
     def sym_jobs(self):
-                self.sym_job_args = []
+        self.sym_job_args = []
 
     def write_sym_job(self):
         with open('args/symjob.txt','w') as output:
             for self.symjobargs in self.sym_job_args:
                 output.write(self.symjobargs + '\n')
 
-    def sym_plugin(self):
+    def write_symnuke_job(self):
+        with open('args/symnukejob.txt','w',encoding="utf-8") as output:
+            for self.symnukejobargs in self.sym_job_args:
+                output.write(self.symnukejobargs + '\n')
+
+    def sym_plugin(self,dcc):
         self.sym_plug_args = []
 
         self.sym_exe = "Executable=C:/Program Files/Python311/python.exe" 
@@ -104,11 +105,56 @@ class rendersubmit():
         self.sym_plug_args.append(self.sym_script)
 
         self.sym_plug_args.append(self.pyver)
+        
+        self.dcc = f"{dcc} "
+
+    def write_symnuke_plug(self):
+        with open('args/symnukeplugin.txt','w') as output:
+            for self.symnukeplugargs in self.sym_plug_args:
+                output.write(self.symnukeplugargs + '\n')
 
     def write_sym_plug(self):
-        with open('args/symplugin.txt','w') as output:
-            for self.symplugargs in self.sym_plug_args:
-                output.write(self.symplugargs + '\n')
+            with open('args/symplugin.txt','w') as output:
+                for self.symplugargs in self.sym_plug_args:
+                    output.write(self.symplugargs + '\n')
+
+    def nuke_jobs(self):
+        self.nuke_job_args = [
+        'Blacklist=',
+        'ChunkSize=10',
+        'EventOptIns=',
+        'OverrideTaskExtraInfoNames=False',
+        'Plugin=Nuke',
+        'Region=',
+        'UserName=jonnhy'
+        ]
+
+    def write_nuke_job(self):
+        with open('args/nukejob.txt','w',encoding="utf-8") as output:
+            for self.nukejobargs in self.nuke_job_args:
+                output.write(self.nukejobargs + '\n')
+
+    def nuke_plugin(self):
+        self.nuke_plugin_args = ['BatchMode=True',
+                               'BatchModeIsMovie=False',
+                               'ContinueOnError=False',
+                               'EnforceRenderOrder=False',
+                               'GpuOverride=0',
+                               'NukeX=False',
+                               'PerformanceProfiler=False',
+                               'RamUse=0',
+                               'RenderMode=Render Full Resolution',
+                               'StackSize=0',
+                               'Threads=0',
+                               'UseGpu=False',
+                               'UseSpecificGpu=False',
+                               'Version=15.0',
+                               'Views=']
+        
+    def write_nuke_plugin(self):
+        with open('args/nukeplugin.txt','w') as output:
+            for self.nukepluginargs in self.nuke_plugin_args:
+                output.write(self.nukepluginargs + '\n')
 
     # jobs file
     def joboptions(self,katargs):
@@ -163,35 +209,73 @@ class rendersubmit():
         with open('commands.txt','w') as output:
             output.write('/n'.join(self.cmdsargs))            
 
+    def get_last_version(self,path,katargs,shots,layer,mode):
+        self.verfolder = glob.glob(path)
+        self.verlist = []
+        for self.ver in self.verfolder:
+            self.verpath = os.path.abspath(self.ver)
+            self.verfolder = self.verpath.rsplit('\\',1)[1]
+            if re.match('\d{4}',self.verfolder):
+                self.verlist.append(self.verfolder)
+        if not self.verlist:
+            self.verlist.append('0001')
+            self.lastver = '0001'
+        else:
+            if katargs['version'] == 1:
+                self.lastver = str(f'{int(self.verlist[-1]) + 1:04d}')
+            else:
+                self.lastver = str(f'{int(self.verlist[-1]):04d}')
+        createdir = {'lgt':f'P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/{self.lastver}',
+                     'nuke':f'P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/nuke/{self.lastver}'}
+        if not os.path.isdir(createdir[mode]):
+            os.makedirs(createdir[mode])
+
     def submit(self,katargs):
         for shotdict in katargs['shotsdict']:
+            self.job_id = []
             for shots in shotdict:
-                batchnameid = f'{katargs["seq"]}-{shots}__[{datetime.now().strftime("%d%m%Y%H%M%S")}]'
+                self.generate_jobs(katargs=katargs,shots=shots,shotdict=shotdict,dcc=katargs['userdcc'])
+            if katargs['nukerender']==1:
+                print(self.job_id)
+                self.generate_jobs(katargs=katargs,shots=shots,shotdict=shotdict,dcc='Nuke')
+
+    def generate_jobs(self,katargs,shots,shotdict,dcc):
+                batchnameid = f'{katargs["seq"]}-{shots}__[{katargs["batchid"]}]'
                 framestart = project_dict.proj_dict().seqsdict[katargs["seq"]][shots]['start']
                 frameend = project_dict.proj_dict().seqsdict[katargs["seq"]][shots]['end']
-                
-                for layer in shotdict[shots]:
-                    # getting the version #
-                    self.path = f'P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/*'
-                    self.verfolder = glob.glob(self.path)
-                    self.verlist = []
-                    for self.ver in self.verfolder:
-                        self.verpath = os.path.abspath(self.ver)
-                        self.verfolder = self.verpath.rsplit('\\',1)[1]
-                        if re.match('\d{4}',self.verfolder):
-                            self.verlist.append(self.verfolder)
-                    if not self.verlist:
-                        self.verlist.append('0001')
-                        self.lastver = '0001'
-                    else:
-                        if katargs['version'] == 1:
-                            self.lastver = str(f'{int(self.verlist[-1]) + 1:04d}')
+                layer = ''
 
-                        else:
-                            self.lastver = str(f'{int(self.verlist[-1]):04d}')
-                    createdir = f'P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/{self.lastver}'
-                    if not os.path.isdir(createdir):
-                        os.makedirs(createdir)                    
+                if dcc == "Nuke":
+                    shotdict[shots]=['write_out']
+
+                for layer in shotdict[shots]:
+                    self.iteration = 0
+                    # getting the version #
+                    self.katpath = f'P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/*'
+                    self.nukepath = f'P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/nuke/*'
+                    self.get_last_version(path=self.katpath,katargs=katargs,shots=shots,layer=layer,mode="lgt")
+                        
+                    if dcc == "Nuke":
+                        layer = "write_out"
+                        self.get_last_version(path=self.nukepath,katargs=katargs,shots=shots,layer=layer,mode="nuke")
+                    # self.verfolder = glob.glob(self.path)
+                    # self.verlist = []
+                    # for self.ver in self.verfolder:
+                    #     self.verpath = os.path.abspath(self.ver)
+                    #     self.verfolder = self.verpath.rsplit('\\',1)[1]
+                    #     if re.match('\d{4}',self.verfolder):
+                    #         self.verlist.append(self.verfolder)
+                    # if not self.verlist:
+                    #     self.verlist.append('0001')
+                    #     self.lastver = '0001'
+                    # else:
+                    #     if katargs['version'] == 1:
+                    #         self.lastver = str(f'{int(self.verlist[-1]) + 1:04d}')
+                    #     else:
+                    #         self.lastver = str(f'{int(self.verlist[-1]):04d}')
+                    # createdir = f'P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/lgt/{layer}/{self.lastver}'
+                    # if not os.path.isdir(createdir):
+                    #     os.makedirs(createdir)                    
 
                     # create the variable for automated progressive steps
                     seqframes = range(int(framestart),int(frameend),1)
@@ -376,7 +460,7 @@ class rendersubmit():
                     self.sympooluser = 'Pool=rendernode'
                     self.sym_job_args.append(self.sympooluser)
                     self.sym_job_args.append(batchname)
-                    self.sym_job_name=f'Name={katargs["seq"]}-{shots} - {layer} - symlink'
+                    self.sym_job_name=f'Name={katargs["seq"]}-{shots} - {layer} - {dcc} symlink'
                     self.sym_job_args.append(self.sym_job_name)
                     self.sym_job_args.append(self.user)
                     self.framerange = f'Frames=1'
@@ -387,17 +471,85 @@ class rendersubmit():
                     self.sym_job_args.append(self.sympriority)
                     self.write_sym_job()
 
+                    self.sym_jobs()
+                    self.sym_plug = "Plugin=Python"
+                    self.sym_job_args.append(self.sym_plug)                    
+                    comments = f'Comment={katargs["usercomment"]}'
+                    self.sym_job_args.append(comments)
+                    self.sympooluser = 'Pool=rendernode'
+                    self.sym_job_args.append(self.sympooluser)
+                    self.sym_job_args.append(batchname)
+                    self.sym_job_name=f'Name={katargs["seq"]}-{shots} - write_out - Nuke symlink'
+                    self.sym_job_args.append(self.sym_job_name)
+                    self.sym_job_args.append(self.user)
+                    self.framerange = f'Frames=1'
+                    self.sym_job_args.append(self.framerange)
+                    self.renchunksize = f'ChunkSize=1'
+                    self.sym_job_args.append(self.renchunksize)
+                    self.sympriority = 'Priority=90'
+                    self.sym_job_args.append(self.sympriority)
+                    # self.dependency = f'JobDependencies=JobName={katargs["seq"]}-{shots}-Nuke_{layer}'
+                    # self.sym_job_args.append(self.dependency)
+
+                    self.write_symnuke_job()
+
                     #### WRITING SYM PLUGIN
-                    self.sym_plugin()
+                    self.sym_plugin(dcc="Nuke")
                     self.arguments = "Arguments="
                     self.arguments += f"{katargs['seq']} "
                     self.arguments += f"{shots} "
                     self.arguments += f"{layer} "
                     self.arguments += f"{self.lastver} "
+                    self.arguments += f"{self.dcc} "
                     self.sym_plug_args.append(self.arguments)
                     self.sym_plug_args.append(outputpathrgba)
                     self.sym_plug_args.append(outputfilergba)
-                    self.write_sym_plug()                    
+                    self.write_symnuke_plug()
+
+                    self.sym_plugin(dcc="Katana")
+                    self.arguments = "Arguments="
+                    self.arguments += f"{katargs['seq']} "
+                    self.arguments += f"{shots} "
+                    self.arguments += f"{layer} "
+                    self.arguments += f"{self.lastver} "
+                    self.arguments += f"{self.dcc} "
+                    self.sym_plug_args.append(self.arguments)
+                    self.sym_plug_args.append(outputpathrgba)
+                    self.sym_plug_args.append(outputfilergba)
+                    self.write_sym_plug()
+
+                    ### WRITING NUKE JOB
+                    self.nuke_jobs()
+                    nukeoutputpathrgba = f'OutputDirectory0=P:/AndreJukebox_output/renders/concept_animatic/{katargs["seq"]}/{shots}/nuke/{self.lastver}/raw'
+                    self.nuke_job_args.append(nukeoutputpathrgba)
+                    nukeoutputfilergba = f'OutputFilename0={shots}_linear.####.exr'
+                    self.nuke_job_args.append(nukeoutputfilergba)
+                    nukeName=f'Name={katargs["seq"]}-{shots}-Nuke_{layer}'
+                    self.nuke_job_args.append(nukeName)
+                    self.nuke_job_args.append(comments)
+                    nukeframes = f'Frames={framestart}-{frameend}'
+                    self.nuke_job_args.append(nukeframes)
+                    self.nuke_job_args.append(batchname)
+                    nukever = f'EnvironmentKeyValue0=nukever={self.lastver}'
+                    self.nuke_job_args.append(nukever)
+                    self.nukeinitialstatus = f'InitialStatus={katargs["userstatus"]}'
+                    self.nuke_job_args.append(self.nukeinitialstatus)
+                    self.priority = f'Priority={katargs["userpriority"]}'
+                    self.nuke_job_args.append(self.priority)
+                    
+                    for self.jobs in self.job_id:
+                        self.dependency = f'JobDependency{self.iteration}={self.jobs}'
+                        self.nuke_job_args.append(self.dependency)
+                        self.iteration += 1
+                    self.write_nuke_job()
+                    
+                    ### WRITING NUKE PLUGIN
+                    self.nuke_plugin()
+                    self.nukeSceneFile = f'SceneFile=P:/AndreJukebox/seq/{katargs["seq"]}/{shots}/comp/workfile.nk'
+                    self.nuke_plugin_args.append(self.nukeSceneFile)
+                    self.nukeWriteNode = f'WriteNode={layer}'
+                    self.nuke_plugin_args.append(self.nukeWriteNode)
+                    self.write_nuke_plugin()
 
                     #### WRITIG MULTIPLE JOBS ARGS
                     self.args = []
@@ -422,40 +574,69 @@ class rendersubmit():
                     self.symjob = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/symjob.txt'
                     self.symplugin = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/symplugin.txt'
 
+                    self.symnukeplug = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/symnukeplugin.txt'
+                    self.symnukejob = 'P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/symnukejob.txt'
+
+                    self.nukejob = "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/nukejob.txt"
+                    self.nukeplugin = "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/nukeplugin.txt"
+
+                    
+                    # GENERATING THE ARGS.TXT for multiple job submission
                     self.args.append(self.submitjobs)
                     self.args.append(self.dep)
 
-                    # katana job
-                    if katargs['mode'] == "prev" or katargs['mode'] == "denoise":
-                        self.args.append(self.job)
-                        self.args.append(self.katjob)
-                        self.args.append(self.katplug)
-                        self.args.append(self.katfile)
+                    if dcc == "Katana":
+                        # katana job
+                        if katargs['mode'] == "prev" or katargs['mode'] == "denoise":
+                            self.args.append(self.job)
+                            self.args.append(self.katjob)
+                            self.args.append(self.katplug)
+                            self.args.append(self.katfile)
 
-                    # rename job
-                    if katargs['mode'] == "denoise" or katargs['mode'] == "denoise_only":
-                        self.args.append(self.job)
-                        self.args.append(self.renamejob)
-                        self.args.append(self.renameplugin)
+                        # rename job
+                        if katargs['mode'] == "denoise" or katargs['mode'] == "denoise_only":
+                            self.args.append(self.job)
+                            self.args.append(self.renamejob)
+                            self.args.append(self.renameplugin)
 
-                    # denoise job
-                    if katargs['mode'] == "denoise" or katargs['mode'] == "denoise_only":
-                        self.args.append(self.job)
-                        self.args.append(self.denjob)
-                        self.args.append(self.denplug)
+                        # denoise job
+                        if katargs['mode'] == "denoise" or katargs['mode'] == "denoise_only":
+                            self.args.append(self.job)
+                            self.args.append(self.denjob)
+                            self.args.append(self.denplug)
 
-                    # beauty rebuild job
-                    if katargs['mode'] == "denoise" or katargs['mode'] == "denoise_only":
-                        self.args.append(self.job)
-                        self.args.append(self.beautyjob)
-                        self.args.append(self.beautyplug)
+                        # beauty rebuild job
+                        if katargs['mode'] == "denoise" or katargs['mode'] == "denoise_only":
+                            self.args.append(self.job)
+                            self.args.append(self.beautyjob)
+                            self.args.append(self.beautyplug)
 
-                    #symlink job
-                    self.args.append(self.job)
-                    self.args.append(self.symjob)
-                    self.args.append(self.symplugin)
+                            self.args.append(self.job)
+                            self.args.append(self.symjob)
+                            self.args.append(self.symplugin)
+
+                    if dcc == "Nuke" or katargs['userdcc'] == "Nuke":
+                        self.args.append(self.job)
+                        self.args.append(self.nukejob)
+                        self.args.append(self.nukeplugin)
+
+                        #symlink job
+                        self.args.append(self.job)
+                        self.args.append(self.symnukejob)
+                        self.args.append(self.symnukeplug)
+
                     
                     self.write_multiple_args()
 
+
                     multiplecommand = f'deadlinecommand "P:/AndreJukebox/pipe/ajbackend/rendersubmit/args/args.txt"'
-                    subprocess.call(multiplecommand, shell=True)
+                    response = subprocess.Popen(multiplecommand, stdout=subprocess.PIPE)
+                    output = response.communicate()[0].decode()
+
+
+
+                    for id in output.split('\r\n'):
+                        if id.startswith('JobID='):
+                            if katargs['userdcc'] == "Katana":
+                                self.job = id.split('=')[1]
+                    self.job_id.append(self.job)

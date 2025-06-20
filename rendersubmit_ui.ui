@@ -543,8 +543,8 @@
          <widget class="QWidget" name="horizontalLayoutWidget_9">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>50</y>
+            <x>11</x>
+            <y>91</y>
             <width>331</width>
             <height>32</height>
            </rect>
@@ -661,8 +661,8 @@
          <widget class="QWidget" name="horizontalLayoutWidget_11">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>130</y>
+            <x>11</x>
+            <y>171</y>
             <width>331</width>
             <height>32</height>
            </rect>
@@ -707,8 +707,8 @@
          <widget class="QWidget" name="horizontalLayoutWidget_12">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>170</y>
+            <x>11</x>
+            <y>211</y>
             <width>331</width>
             <height>31</height>
            </rect>
@@ -778,8 +778,8 @@
          <widget class="QWidget" name="verticalLayoutWidget_2">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>350</y>
+            <x>11</x>
+            <y>391</y>
             <width>331</width>
             <height>41</height>
            </rect>
@@ -845,8 +845,8 @@
          <widget class="QWidget" name="verticalLayoutWidget_3">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>390</y>
+            <x>11</x>
+            <y>431</y>
             <width>331</width>
             <height>41</height>
            </rect>
@@ -881,8 +881,8 @@
          <widget class="QWidget" name="horizontalLayoutWidget">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>210</y>
+            <x>11</x>
+            <y>251</y>
             <width>331</width>
             <height>31</height>
            </rect>
@@ -923,8 +923,8 @@
          <widget class="QWidget" name="horizontalLayoutWidget_2">
           <property name="geometry">
            <rect>
-            <x>9</x>
-            <y>89</y>
+            <x>10</x>
+            <y>130</y>
             <width>331</width>
             <height>32</height>
            </rect>
@@ -972,8 +972,8 @@
          <widget class="QWidget" name="horizontalLayoutWidget_3">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>320</y>
+            <x>11</x>
+            <y>361</y>
             <width>331</width>
             <height>31</height>
            </rect>
@@ -1029,8 +1029,8 @@
          <widget class="QWidget" name="horizontalLayoutWidget_4">
           <property name="geometry">
            <rect>
-            <x>9</x>
-            <y>250</y>
+            <x>10</x>
+            <y>291</y>
             <width>331</width>
             <height>31</height>
            </rect>
@@ -1079,8 +1079,8 @@
          <widget class="QWidget" name="horizontalLayoutWidget_5">
           <property name="geometry">
            <rect>
-            <x>9</x>
-            <y>280</y>
+            <x>10</x>
+            <y>321</y>
             <width>331</width>
             <height>31</height>
            </rect>
@@ -1123,6 +1123,36 @@
               </property>
              </item>
             </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="horizontalLayoutWidget_6">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>50</y>
+            <width>331</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="nuke_video_hor">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="QCheckBox" name="nuke_check">
+               <property name="text">
+                <string>Nuke render</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="video_check">
+               <property name="text">
+                <string>Video Output</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
