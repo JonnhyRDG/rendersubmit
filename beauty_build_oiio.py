@@ -155,5 +155,14 @@ class beautyBuild:
                 self.clean_up()
         # sl.symlink().sym(seq=self.seq,shot=self.shot,layer=self.layer,version=self.version)
 
+    def do_the_build(self):
+        aov = aov_dict_read.aov_dict()
+        aov.dictread(seq=self.seq,shot=self.shot,layer=self.layer)
+        
+        if len(aov.aovdict) == 0:
+            print("Empty dict. Passing.")
+        else:
+            self.rebuild_beauty()
+
 bbo = beautyBuild()
-bbo.rebuild_beauty()
+bbo.do_the_build()

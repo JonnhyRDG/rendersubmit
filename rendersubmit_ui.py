@@ -208,6 +208,11 @@ class renderSubmit(base_class, generated_class):
         else:
             self.video = 0
 
+        if self.video_check.isChecked():
+            self.video = 1
+        else:
+            self.video = 0
+
         argdict = {}
         argdict['userdcc']=str(self.dcc_combo.currentText())
         render_dict = {}
@@ -247,6 +252,7 @@ class renderSubmit(base_class, generated_class):
         argdict['nukerender']=self.nuke
         argdict['videorender']=self.video
         argdict['batchid']=datetime.now().strftime("%d%m%Y%H%M%S")
+        argdict['makevideo']=self.video
         
         if not self.currentseq == '':
             rendersubmit.rendersubmit().submit(katargs=argdict)
@@ -335,9 +341,11 @@ class renderSubmit(base_class, generated_class):
         if self.dcc_combo.currentText() == "Katana":
             self.nuke_check.setVisible(1)
             self.nuke_check.setEnabled(1)
+            # self.video_check.setChecked(0)
         else:
             self.nuke_check.setCheckState(QtCore.Qt.Unchecked)
             self.nuke_check.setEnabled(0)
+            self.video_check.setChecked(1)
             # self.nuke_check.setVisible(0)
 
     def stepspin(self):
@@ -396,6 +404,12 @@ class renderSubmit(base_class, generated_class):
                     if hasattr(cell,'setSelected'):
                         cell.setSelected(False)
 
+    def enable_video_check(self):
+        self.video_check.setEnabled(1)
+        nukestate = self.nuke_check.checkState()
+        self.video_check.setChecked(nukestate)
+
+    
     def onTreeContextMenuRequested(self, point):
         item = self.shotTree.itemAt(point)
         selection = self.shotTree.selectedItems()
@@ -421,6 +435,7 @@ class renderSubmit(base_class, generated_class):
         self.sequence_comboBox.currentIndexChanged.connect(self.createkeyshots)
         self.submit_push.clicked.connect(self.onRender)
         self.publish_push.clicked.connect(self.pullKeyComp)
+        self.nuke_check.stateChanged.connect(self.enable_video_check)
         self.publishsubmit_push.clicked.connect(self.publish_and_submit)
         self.reload_push.clicked.connect(self.reload_csv)
         self.enableall_push.clicked.connect(self.enableAll)
