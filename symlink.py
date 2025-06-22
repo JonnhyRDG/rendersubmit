@@ -15,7 +15,8 @@ class symlink():
     def sym(self):
         layerpath = {
                     'Katana':f'P:\\AndreJukebox_output\\renders\\concept_animatic\\{self.seq}\\{self.shot}\\lgt\\{self.layer}\\',
-                    'Nuke':f'P:\\AndreJukebox_output\\renders\\concept_animatic\\{self.seq}\\{self.shot}\\nuke\\'
+                    'Nuke':f'P:\\AndreJukebox_output\\renders\\concept_animatic\\{self.seq}\\{self.shot}\\nuke\\',
+                    'mov':f'P:\\AndreJukebox_output\\renders\\concept_animatic\\{self.seq}\\{self.shot}\\mov\\'
                      }
         latestpath = layerpath[self.mode] + 'latest'
         verpath = layerpath[self.mode] + self.version
