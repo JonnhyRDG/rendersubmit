@@ -2,6 +2,7 @@ import sys, nuke
 import os
 import glob
 import subprocess
+import project_dict
 
 from rendersubmit import rendersubmit
 import customread
@@ -49,7 +50,7 @@ def updategsv(seq,shot):
         if customs.knob('customreadclass'):
             layer = customs.knob("layer").value()
             layerpath = f'P:/AndreJukebox_output/renders/concept_animatic/{seq}/{shot}/lgt/{layer}'
-            if not os.path.exists(layerpath):
+            if not os.path.exists(layerpath) or layer not in project_dict.proj_dict().seqsdict[seqnew][shotnew]['layers']:
                 print(layerpath," does not exist, skipping and disabling")
                 customs.knob("disable").setValue(1)
             else:

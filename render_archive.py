@@ -1,6 +1,7 @@
 import os
 import glob
 import subprocess
+import shutil
 import project_dict
 
 pd = project_dict.proj_dict()
@@ -16,13 +17,20 @@ def copy_folders(seq,shot):
         if os.path.isdir(source_folders):
             dest_folders = source_folders.replace('P:','H:')
             if all(x not in dest_folders for x in exclude):
-                copycmd = f'xcopy /Y {source_folders} {dest_folders}\\'
-                subprocess.call(copycmd,shell=True)
+
+                if os.path.getmtime(os.path.abspath(source)) > os.path.getmtime(os.path.abspath(dest_folders)):
+                    shutil.rmtree(dest_folders)
+
+                if not os.path.exists(dest_folders):
+                    copycmd = f'xcopy /Y {source_folders} {dest_folders}\\'
+                    print('Copied new version ', dest_folders)
+                    subprocess.call(copycmd,shell=True)
             
                 if not os.path.exists(dest_folders):
                     os.makedirs(os.path.abspath(dest_folders))
                 else:
-                    print(f'{dest_folders} already exists')
+                    continue
+                    # print(f'{dest_folders} already exists')
             else:
                 type_items = glob.glob(f'{source_folders}\\*')
                 ver_source_list=[]
@@ -36,13 +44,26 @@ def copy_folders(seq,shot):
                 for lastver in ver_source_list:
                     source = lastver
                     dest = source.replace('P:\\','H:\\')
-                    copycmd = f'xcopy /Y {source} {dest}\\'
-                    subprocess.call(copycmd,shell=True)
-                    
+
                     assetdir = dest.rsplit("\\",1)[0]
                     destver = f'{assetdir}\latest'
+
+                    if os.path.getmtime(os.path.abspath(source)) > os.path.getmtime(os.path.abspath(destver)):
+                        # print(source, "is newer, so we copying that bs")
+                        # print("we also, deleteing" ,destver)
+                        shutil.rmtree(destver)
+
+                    if not os.path.exists(destver):
+                        copycmd = f'xcopy /Y {source} {dest}\\'
+                        subprocess.call(copycmd,shell=True)
+                        print('Copied new version ', destver)
+                    
+
                     if not os.path.exists(destver):
                         os.rename(dest,destver)
+                    else:
+                        continue
+                        # print(destver," already exists")
 
 for seqs in pd.seqsdict:
     for shots in pd.seqsdict[seqs]:
