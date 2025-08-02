@@ -9,26 +9,10 @@ class aov_rename():
         self.shot = sys.argv[2]
         self.layer = sys.argv[3]
         self.version = sys.argv[4]
-        # self.framerange = f'{sys.argv[5]}'
         self.adr = aov_dict_read.aov_dict()
 
         # Noise executable
         self.noice = 'P:/AndreJukebox/pipe/ktoa/KtoA4.3.3.0_kat7/bin/noice'
-
-    # def prep_aov(self):
-    #     self.adr.dictread(self.seq,self.shot,self.layer)
-    #     for frame in range(int(self.framerange.split("-")[0]),int(self.framerange.split("-")[1])+1):
-    #         self.beauty = f'P:/AndreJukebox_output/renders/concept_animatic/{self.seq}/{self.shot}/lgt/{self.layer}/{self.version}/beauty/{self.layer}_beauty.{frame}.linear.exr'
-    #         self.beautyraw = f'P:/AndreJukebox_output/renders/concept_animatic/{self.seq}/{self.shot}/lgt/{self.layer}/{self.version}/beauty/{self.layer}_beauty_raw.{frame}.linear.exr'
-    #         if not os.path.exists(self.beautyraw):
-    #             os.rename(self.beauty,self.beautyraw)
-    #             print("beauty renamed")
-    #         for aov in self.adr.aovdict:
-    #             self.lg = f'P:/AndreJukebox_output/renders/concept_animatic/{self.seq}/{self.shot}/lgt/{self.layer}/{self.version}/{aov}/{self.layer}_{aov}.{frame}.linear.exr'
-    #             self.lgraw = f'P:/AndreJukebox_output/renders/concept_animatic/{self.seq}/{self.shot}/lgt/{self.layer}/{self.version}/{aov}/{self.layer}_{aov}_raw.{frame}.linear.exr'
-    #             if not os.path.exists(self.lgraw):
-    #                 os.rename(self.lg,self.lgraw)
-    #                 print("aov renamed")
 
     def prep_aov(self):
         self.adr.dictread(self.seq,self.shot,self.layer)

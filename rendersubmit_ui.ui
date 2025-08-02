@@ -454,6 +454,18 @@
         <item>
          <layout class="QHBoxLayout" name="output_layout">
           <item>
+           <widget class="QPushButton" name="reload_push">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>RELOAD SHOT INFO</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="publish_push">
             <property name="font">
              <font>
@@ -471,9 +483,9 @@
            <widget class="QPushButton" name="submit_push">
             <property name="font">
              <font>
-              <pointsize>12</pointsize>
-              <weight>50</weight>
-              <bold>false</bold>
+              <pointsize>14</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
              </font>
             </property>
             <property name="text">
@@ -485,25 +497,13 @@
            <widget class="QPushButton" name="publishsubmit_push">
             <property name="font">
              <font>
-              <pointsize>12</pointsize>
-              <weight>50</weight>
-              <bold>false</bold>
+              <pointsize>14</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
              </font>
             </property>
             <property name="text">
              <string>PUBLISH AND SUBMIT</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="reload_push">
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>RELOAD SHOT INFO</string>
             </property>
            </widget>
           </item>
@@ -952,7 +952,7 @@
              </property>
              <item>
               <property name="text">
-               <string>none</string>
+               <string>rendering</string>
               </property>
              </item>
              <item>
@@ -1170,10 +1170,22 @@
      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0">
       <item>
        <layout class="QHBoxLayout" name="version_up_layout">
-        <item alignment="Qt::AlignLeft">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetFixedSize</enum>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>350</number>
+        </property>
+        <item>
          <widget class="QCheckBox" name="versio_up_checkbox">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1193,6 +1205,8 @@
           <property name="font">
            <font>
             <pointsize>15</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -1209,6 +1223,58 @@
           </property>
           <property name="tristate">
            <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="farmpub_checkbox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Publish on Farm</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="symlink_checkbox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>15</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Tag LATEST</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

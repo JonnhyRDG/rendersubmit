@@ -7,8 +7,8 @@ class denoise():
     def __init__(self):
         self.seq = sys.argv[1]
         self.shot = sys.argv[2]
-        self.version = sys.argv[4]
         self.layer = sys.argv[3]
+        self.version = sys.argv[4]
         self.adr = aov_dict_read.aov_dict()
         # Noise executable
         self.noice = 'P:/AndreJukebox/pipe/ktoa/KtoA4.3.3.0_kat7/bin/noice'

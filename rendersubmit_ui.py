@@ -126,9 +126,6 @@ class renderSubmit(base_class, generated_class):
 
     def hierarchy_create(self,items,headers,childlist):
         self.ml_item = QtWidgets.QTreeWidgetItem(self.shotTree, self.hierarchy[project_dict.proj_dict().seqsdict[self.currentseq][items]['type']])
-        # ml_button = QtWidgets.QLabel(parent=self.shotTree)
-        # # self.shotTree.setItemWidget(self.ml_item,0,ml_button)
-        
         self.ml_item.setExpanded(True)
         
         for childshots in childlist:
@@ -213,6 +210,11 @@ class renderSubmit(base_class, generated_class):
         else:
             self.video = 0
 
+        if self.symlink_checkbox.isChecked():
+            self.symlink = 1
+        else:
+            self.symlink = 0
+
         argdict = {}
         argdict['userdcc']=str(self.dcc_combo.currentText())
         render_dict = {}
@@ -253,6 +255,7 @@ class renderSubmit(base_class, generated_class):
         argdict['videorender']=self.video
         argdict['batchid']=datetime.now().strftime("%d%m%Y%H%M%S")
         argdict['makevideo']=self.video
+        argdict['makesym']=self.symlink
         
         if not self.currentseq == '':
             rendersubmit.rendersubmit().submit(katargs=argdict)
@@ -409,7 +412,10 @@ class renderSubmit(base_class, generated_class):
         nukestate = self.nuke_check.checkState()
         self.video_check.setChecked(nukestate)
 
-    
+    def enable_sym_check(self):
+        symstate = self.versio_up_checkbox.checkState()
+        self.symlink_checkbox.setChecked(symstate)
+
     def onTreeContextMenuRequested(self, point):
         item = self.shotTree.itemAt(point)
         selection = self.shotTree.selectedItems()
@@ -436,6 +442,7 @@ class renderSubmit(base_class, generated_class):
         self.submit_push.clicked.connect(self.onRender)
         self.publish_push.clicked.connect(self.pullKeyComp)
         self.nuke_check.stateChanged.connect(self.enable_video_check)
+        self.versio_up_checkbox.stateChanged.connect(self.enable_sym_check)
         self.publishsubmit_push.clicked.connect(self.publish_and_submit)
         self.reload_push.clicked.connect(self.reload_csv)
         self.enableall_push.clicked.connect(self.enableAll)
@@ -469,10 +476,10 @@ class renderSubmit(base_class, generated_class):
                             shotlist.append(shot_name)
         
         for shots in shotlist:
-            nk_source = project_dict.proj_dict().seqsdict[self.currentseq][shots]["comp"]
-            nukefile = f'P:/AndreJukebox/seq/{self.currentseq}/{nk_source}/comp/workfile.nk'
-            if os.path.isfile(nukefile):
-                nukecommand = f'{nukerun} -t {script} {self.currentseq} {shots} {nk_source}'
+            self.nk_source = project_dict.proj_dict().seqsdict[self.currentseq][shots]["comp"]
+            self.nukefile = f'P:/AndreJukebox/seq/{self.currentseq}/{self.nk_source}/comp/workfile.nk'
+            if os.path.isfile(self.nukefile):
+                nukecommand = f'{nukerun} -t {script} {self.currentseq} {shots} {self.nk_source}'
                 print(nukecommand)
                 subprocess.call(nukecommand, shell=True)
 
@@ -488,6 +495,7 @@ class renderSubmit(base_class, generated_class):
         print('[[[PULL DONE]]]')
 
     def reload_csv(self):
+        current_seq = str(self.sequence_comboBox.currentText())
         self.shotTree.clear()
         def getGoogleSeet(self,fileId, outDir, outFile):
   
@@ -518,6 +526,7 @@ class renderSubmit(base_class, generated_class):
 
         self.populateCombo()
         self.createkeyshots()
+        self.sequence_comboBox.setCurrentText(current_seq)
         
     def publish_and_submit(self):
         self.pullKeyComp()

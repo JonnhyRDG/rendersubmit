@@ -17,7 +17,7 @@ class makeVideo:
             os.makedirs(outputfolder)
         outputfullpath = f'P:\\AndreJukebox_output\\renders\\concept_animatic\\{self.seq}\\{self.shot}\\mov\\{self.version}\\{self.seq}_{self.shot}.mov'
 
-        videocmd = f'ffmpeg -f image2 -start_number 1001 -y -i "{source}" -r 24 -c:v prores_ks -profile:v 3 -vendor apl0 -bits_per_mb 6500 -pix_fmt yuv422p10le "{outputfullpath}"'
+        videocmd = f'ffmpeg -v verbose -f image2 -framerate 24 -start_number 1001 -y -i "{source}" -r 24 -c:v prores_ks -profile:v 5 -vendor apl0 -bits_per_mb 6500 -pix_fmt yuva444p10le "{outputfullpath}"'
         print(videocmd)
         subprocess.call(videocmd,shell=True)
 
